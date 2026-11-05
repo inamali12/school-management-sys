@@ -219,3 +219,4 @@ function deleteClass(id, name) {
     }
   });
 }
+

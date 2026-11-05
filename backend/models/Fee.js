@@ -138,3 +138,4 @@ feeSchema.index({ className: 1, month: 1 });
 feeSchema.index({ paymentStatus: 1 });
 
 module.exports = mongoose.model('Fee', feeSchema);
+

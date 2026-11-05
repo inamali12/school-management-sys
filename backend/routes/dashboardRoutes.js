@@ -7,3 +7,4 @@ router.use(protect);
 router.get('/stats', getDashboardStats);
 
 module.exports = router;
+

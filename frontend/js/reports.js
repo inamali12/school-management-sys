@@ -552,3 +552,4 @@ async function renderTeacherReport() {
     container.innerHTML = `<div class="empty-state" style="color: var(--danger);">${err.message}</div>`;
   }
 }
+

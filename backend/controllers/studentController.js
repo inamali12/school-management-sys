@@ -226,3 +226,4 @@ exports.deleteStudent = async (req, res, next) => {
     next(err);
   }
 };
+

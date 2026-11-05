@@ -3,8 +3,11 @@ const fs = require('fs');
 const path = require('path');
 const { connectDB, getMongoStatus } = require('../config/db');
 
-// Ensure dotenv is loaded
-require('dotenv').config({ path: path.join(__dirname, '../../.env') });
+// Ensure dotenv is loaded (supports backend/.env or root repository)
+const envPath = fs.existsSync(path.join(__dirname, '../.env'))
+  ? path.join(__dirname, '../.env')
+  : path.join(__dirname, '../../.env');
+require('dotenv').config({ path: envPath });
 
 const Storage = require('./storage');
 
@@ -642,8 +645,10 @@ const seedDatabase = async () => {
     }
   ];
 
-  // Save to persistent storage / MongoDB
-  const DATA_DIR = path.join(__dirname, '../../data');
+  // Save to persistent storage / MongoDB (supports standalone backend/ or root repository)
+  const DATA_DIR = fs.existsSync(path.join(__dirname, '../../data'))
+    ? path.join(__dirname, '../../data')
+    : path.join(__dirname, '../data');
   if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
   }
@@ -728,3 +733,4 @@ if (require.main === module) {
 }
 
 module.exports = seedDatabase;
+

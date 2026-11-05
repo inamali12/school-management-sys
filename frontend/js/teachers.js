@@ -298,3 +298,4 @@ function deleteTeacher(id, name, teacherId) {
     }
   });
 }
+

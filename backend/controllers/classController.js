@@ -177,3 +177,4 @@ exports.deleteClass = async (req, res, next) => {
     next(err);
   }
 };
+

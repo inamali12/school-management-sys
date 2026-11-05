@@ -356,3 +356,4 @@ function deleteAttendanceRecord(id, studentName, date) {
     }
   });
 }
+

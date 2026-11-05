@@ -162,3 +162,4 @@ exports.logout = (req, res) => {
     message: 'Logged out successfully'
   });
 };
+

@@ -397,3 +397,4 @@ function deleteFeeVoucher(id, voucherNo, studentName) {
     }
   });
 }
+

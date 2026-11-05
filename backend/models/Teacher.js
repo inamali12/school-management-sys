@@ -83,3 +83,4 @@ const teacherSchema = new mongoose.Schema({
 teacherSchema.index({ fullName: 'text', teacherId: 'text', subject: 'text' });
 
 module.exports = mongoose.model('Teacher', teacherSchema);
+

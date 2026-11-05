@@ -335,3 +335,4 @@ To connect SchoolConnect to a live MongoDB Atlas cloud database:
 - **Department**: Department of Software Engineering.
 - **Course**: SW417 Web Engineering (Project-Based Learning).
 - **Institution Affiliation**: Higher Education Commission (HEC) of Pakistan.
+

@@ -558,3 +558,4 @@ function renderParentDashboard(data) {
 
   view.innerHTML = html;
 }
+

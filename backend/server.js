@@ -1,5 +1,11 @@
+const fs = require('fs');
 const path = require('path');
-require('dotenv').config({ path: path.join(__dirname, '../.env') });
+
+// Load environment variables from backend/.env or root .env
+const envPath = fs.existsSync(path.join(__dirname, '.env'))
+  ? path.join(__dirname, '.env')
+  : path.join(__dirname, '../.env');
+require('dotenv').config({ path: envPath });
 
 const app = require('./app');
 const { connectDB } = require('./config/db');
@@ -38,3 +44,4 @@ startServer().catch(err => {
   console.error('Fatal server startup error:', err);
   process.exit(1);
 });
+

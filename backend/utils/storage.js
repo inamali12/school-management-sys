@@ -10,8 +10,10 @@ const ClassModel = require('../models/Class');
 const Attendance = require('../models/Attendance');
 const Fee = require('../models/Fee');
 
-// Local Data directory for persistence fallback
-const DATA_DIR = path.join(__dirname, '../../data');
+// Local Data directory for persistence fallback (supports standalone backend/ or root repository)
+const DATA_DIR = fs.existsSync(path.join(__dirname, '../../data'))
+  ? path.join(__dirname, '../../data')
+  : path.join(__dirname, '../data');
 if (!fs.existsSync(DATA_DIR)) {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 }
@@ -872,3 +874,4 @@ const Storage = {
 };
 
 module.exports = Storage;
+

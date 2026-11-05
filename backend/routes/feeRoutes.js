@@ -30,3 +30,4 @@ router.route('/:id')
   .delete(authorize('admin'), deleteFee);
 
 module.exports = router;
+

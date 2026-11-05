@@ -93,3 +93,4 @@ studentSchema.index({ className: 1, section: 1 });
 studentSchema.index({ fullName: 'text', fatherName: 'text', studentId: 'text' });
 
 module.exports = mongoose.model('Student', studentSchema);
+

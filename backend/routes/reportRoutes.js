@@ -20,3 +20,4 @@ router.get('/fees-defaulters', authorize('admin'), getFeeDefaultersReport);
 router.get('/teachers', authorize('admin'), getTeacherReport);
 
 module.exports = router;
+

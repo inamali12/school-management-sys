@@ -216,3 +216,4 @@ exports.deleteTeacher = async (req, res, next) => {
     next(err);
   }
 };
+

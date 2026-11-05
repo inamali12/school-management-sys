@@ -1,0 +1,17 @@
+{
+  "name": "schoolconnect-frontend",
+  "version": "1.0.0",
+  "description": "Frontend Client for SchoolConnect - MUET SZAB Campus",
+  "scripts": {
+    "start": "npx serve -p 3000 .",
+    "open": "start login.html"
+  },
+  "keywords": [
+    "school-management",
+    "frontend",
+    "html5",
+    "javascript"
+  ],
+  "author": "MUET SZAB Campus Khairpur Mir's",
+  "license": "MIT"
+}

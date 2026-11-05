@@ -24,3 +24,4 @@ router.route('/:id')
   .delete(authorize('admin'), deleteTeacher);
 
 module.exports = router;
+
