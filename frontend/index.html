@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SchoolConnect - Smart School Management System</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body style="display: flex; align-items: center; justify-content: center; height: 100vh; background: #0f172a; color: white;">
+  <div style="text-align: center;">
+    <div class="brand-icon" style="width: 64px; height: 64px; font-size: 2rem; margin: 0 auto 1.5rem;">
+      <i class="fa-solid fa-graduation-cap"></i>
+    </div>
+    <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;">SchoolConnect</h1>
+    <p style="color: #94a3b8; font-size: 0.95rem; margin-bottom: 2rem;">Smart School Management System &bull; MUET SZAB Campus</p>
+    <div class="spinner" style="border-top-color: #38bdf8;"></div>
+    <p style="color: #64748b; font-size: 0.82rem; margin-top: 1rem;">Redirecting to your portal...</p>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script>
+    const token = API.getToken();
+    const user = API.getUser();
+    setTimeout(() => {
+      if (token && user) {
+        window.location.href = 'dashboard.html';
+      } else {
+        window.location.href = 'login.html';
+      }
+    }, 600);
+  </script>
+</body>
+</html>

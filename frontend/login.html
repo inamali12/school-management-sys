@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - SchoolConnect Management Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    body {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 980px;
+      background: white;
+      border-radius: var(--radius-xl);
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      overflow: hidden;
+    }
+
+    .login-hero {
+      background: linear-gradient(145deg, #0f172a 0%, #1e3a8a 70%, #0369a1 100%);
+      color: white;
+      padding: 3.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+    }
+
+    .login-hero::before {
+      content: '';
+      position: absolute;
+      top: -50px;
+      right: -50px;
+      width: 250px;
+      height: 250px;
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.25) 0%, transparent 70%);
+      border-radius: 50%;
+    }
+
+    .hero-top {
+      position: relative;
+      z-index: 2;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px);
+      padding: 0.4rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      margin-bottom: 2rem;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .hero-title {
+      font-size: 2.2rem;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .hero-desc {
+      color: #94a3b8;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+
+    .hero-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .hero-features li {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      color: #e2e8f0;
+    }
+
+    .hero-features li i {
+      color: #38bdf8;
+      font-size: 1rem;
+    }
+
+    .hero-footer {
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      padding-top: 1.5rem;
+      font-size: 0.78rem;
+      color: #64748b;
+    }
+
+    .login-form-side {
+      padding: 3.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .form-header {
+      margin-bottom: 2rem;
+    }
+
+    .form-header h2 {
+      font-size: 1.65rem;
+      font-weight: 800;
+      color: var(--text-main);
+      margin-bottom: 0.35rem;
+    }
+
+    .form-header p {
+      color: var(--text-muted);
+      font-size: 0.88rem;
+    }
+
+    .quick-roles {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px dashed var(--border-color);
+    }
+
+    .quick-roles h4 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      margin-bottom: 0.75rem;
+      text-align: center;
+    }
+
+    .quick-role-btns {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.6rem;
+    }
+
+    .btn-quick-role {
+      padding: 0.5rem 0.4rem;
+      font-size: 0.78rem;
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-color);
+      background: #f8fafc;
+      color: var(--text-main);
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.25rem;
+      transition: var(--transition);
+    }
+
+    .btn-quick-role:hover {
+      background: #f1f5f9;
+      border-color: var(--secondary);
+      transform: translateY(-2px);
+    }
+
+    .btn-quick-role i {
+      font-size: 1rem;
+    }
+
+    .btn-quick-role.admin i { color: #2563eb; }
+    .btn-quick-role.teacher i { color: #059669; }
+    .btn-quick-role.parent i { color: #7c3aed; }
+
+    @media (max-width: 860px) {
+      .login-container {
+        grid-template-columns: 1fr;
+      }
+      .login-hero {
+        display: none;
+      }
+      .login-form-side {
+        padding: 2.5rem 1.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="login-container">
+    <!-- Left Hero Side -->
+    <div class="login-hero">
+      <div class="hero-top">
+        <div class="hero-badge">
+          <i class="fa-solid fa-graduation-cap"></i> MUET SZAB Campus &bull; SW417
+        </div>
+        <h1 class="hero-title">SchoolConnect</h1>
+        <p class="hero-desc">
+          Smart School Management System built for private schools in Pakistan. Digitize student records, attendance, fees, and reporting with ease.
+        </p>
+
+        <ul class="hero-features">
+          <li><i class="fa-solid fa-circle-check"></i> Complete Student & Teacher Profiles</li>
+          <li><i class="fa-solid fa-circle-check"></i> Daily Attendance & Automated Summary</li>
+          <li><i class="fa-solid fa-circle-check"></i> Monthly Fee Vouchers & Payment History</li>
+          <li><i class="fa-solid fa-circle-check"></i> Role-Based Portals (Admin, Teacher, Parent)</li>
+          <li><i class="fa-solid fa-circle-check"></i> Printable Receipts & One-Click CSV Export</li>
+        </ul>
+      </div>
+
+      <div class="hero-footer">
+        <strong>Bright Future Public School, Khairpur Mir's</strong><br>
+        Developed for Mehran University of Engineering & Technology
+      </div>
+    </div>
+
+    <!-- Right Login Form Side -->
+    <div class="login-form-side">
+      <div class="form-header">
+        <h2>Welcome Back</h2>
+        <p>Please enter your credentials to access your portal</p>
+      </div>
+
+      <form id="login-form">
+        <div class="form-group" style="margin-bottom: 1.25rem;">
+          <label class="form-label" for="username">Username or Email <span class="required">*</span></label>
+          <div style="position: relative;">
+            <input type="text" id="username" class="form-control" placeholder="admin@schoolconnect.edu.pk" required autocomplete="username" style="padding-left: 2.4rem;">
+            <i class="fa-solid fa-user" style="position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); color: var(--text-light); font-size: 0.9rem;"></i>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: 1.5rem;">
+          <label class="form-label" for="password">Password <span class="required">*</span></label>
+          <div style="position: relative;">
+            <input type="password" id="password" class="form-control" placeholder="••••••••" required autocomplete="current-password" style="padding-left: 2.4rem; padding-right: 2.4rem;">
+            <i class="fa-solid fa-lock" style="position: absolute; left: 0.9rem; top: 50%; transform: translateY(-50%); color: var(--text-light); font-size: 0.9rem;"></i>
+            <button type="button" id="toggle-pwd-btn" style="position: absolute; right: 0.9rem; top: 50%; transform: translateY(-50%); background: none; border: none; color: var(--text-light); cursor: pointer;">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </div>
+
+        <button type="submit" id="login-submit-btn" class="btn btn-primary" style="width: 100%; padding: 0.8rem; font-size: 0.95rem;">
+          <i class="fa-solid fa-right-to-bracket"></i> Sign In to Portal
+        </button>
+      </form>
+
+      <!-- 1-Click Quick Demo Login Buttons for University Evaluation -->
+      <div class="quick-roles">
+        <h4>⚡ Demo 1-Click Quick Login</h4>
+        <div class="quick-role-btns">
+          <button type="button" class="btn-quick-role admin" onclick="quickFill('admin@schoolconnect.edu.pk', 'admin123')">
+            <i class="fa-solid fa-user-shield"></i>
+            <span>Admin</span>
+          </button>
+          <button type="button" class="btn-quick-role teacher" onclick="quickFill('teacher@schoolconnect.edu.pk', 'teacher123')">
+            <i class="fa-solid fa-chalkboard-user"></i>
+            <span>Teacher</span>
+          </button>
+          <button type="button" class="btn-quick-role parent" onclick="quickFill('parent@schoolconnect.edu.pk', 'parent123')">
+            <i class="fa-solid fa-people-roof"></i>
+            <span>Parent</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    // Show / Hide Password toggle
+    const pwdInput = document.getElementById('password');
+    const togglePwdBtn = document.getElementById('toggle-pwd-btn');
+    togglePwdBtn.addEventListener('click', () => {
+      const type = pwdInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      pwdInput.setAttribute('type', type);
+      togglePwdBtn.innerHTML = type === 'password' ? '<i class="fa-regular fa-eye"></i>' : '<i class="fa-regular fa-eye-slash"></i>';
+    });
+
+    // Check query params for session expired message
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('session') === 'expired') {
+      Utils.showToast('Your session has expired. Please log in again.', 'warning');
+    }
+
+    // Quick fill helper
+    function quickFill(user, pass) {
+      document.getElementById('username').value = user;
+      document.getElementById('password').value = pass;
+      document.getElementById('login-form').dispatchEvent(new Event('submit'));
+    }
+
+    // Form submission
+    const loginForm = document.getElementById('login-form');
+    const submitBtn = document.getElementById('login-submit-btn');
+
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Authenticating...';
+
+      try {
+        const response = await API.auth.login({ username, password });
+        API.setToken(response.token);
+        API.setUser(response.user);
+        Utils.showToast(`Login successful! Welcome, ${response.user.name}.`, 'success');
+
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 600);
+      } catch (err) {
+        Utils.showToast(err.message || 'Invalid username or password', 'error');
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = '<i class="fa-solid fa-right-to-bracket"></i> Sign In to Portal';
+      }
+    });
+  </script>
+</body>
+</html>

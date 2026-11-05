@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teacher Management - SchoolConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="brand-text">
+          <h2>SchoolConnect</h2>
+          <span>Bright Future School</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="menu-category">Main Navigation</li>
+        <li class="menu-item"><a href="dashboard.html" class="menu-link" id="nav-dashboard"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a></li>
+        <li class="menu-category">Core Modules</li>
+        <li class="menu-item" id="nav-students"><a href="students.html" class="menu-link"><i class="fa-solid fa-user-graduate"></i><span>Students</span></a></li>
+        <li class="menu-item" id="nav-teachers"><a href="teachers.html" class="menu-link active"><i class="fa-solid fa-chalkboard-user"></i><span>Teachers</span></a></li>
+        <li class="menu-item" id="nav-classes"><a href="classes.html" class="menu-link"><i class="fa-solid fa-school"></i><span>Classes & Sections</span></a></li>
+        <li class="menu-item" id="nav-attendance"><a href="attendance.html" class="menu-link"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a></li>
+        <li class="menu-item" id="nav-fees"><a href="fees.html" class="menu-link"><i class="fa-solid fa-receipt"></i><span>Fee Management</span></a></li>
+        <li class="menu-category">Administration</li>
+        <li class="menu-item" id="nav-reports"><a href="reports.html" class="menu-link"><i class="fa-solid fa-file-invoice"></i><span>Reports Hub</span></a></li>
+        <li class="menu-item" id="nav-users"><a href="users.html" class="menu-link"><i class="fa-solid fa-users-gear"></i><span>User Management</span></a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="user-avatar" id="sidebar-user-avatar">A</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-user-name">Administrator</div>
+            <div class="user-role-badge badge-admin" id="sidebar-user-role">ADMIN</div>
+          </div>
+          <button class="btn-sidebar-logout btn-logout" title="Logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="top-header">
+        <div class="header-left">
+          <button id="menu-toggle" class="menu-toggle-btn"><i class="fa-solid fa-bars"></i></button>
+          <div class="page-title-box">
+            <h1>Teacher Management</h1>
+            <p>Faculty directory, course & class allocations, and teacher profiles</p>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button id="btn-open-add-teacher" class="btn btn-primary">
+            <i class="fa-solid fa-user-plus"></i> Add New Teacher
+          </button>
+          <button id="btn-export-teachers" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-file-csv"></i> Export CSV
+          </button>
+          <button onclick="window.print()" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-print"></i> Print
+          </button>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <div class="toolbar-container">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="search-input" placeholder="Search by name, ID, subject, or email...">
+          </div>
+
+          <div class="filters-group">
+            <select id="filter-subject" class="filter-select">
+              <option value="all">All Subjects</option>
+              <option value="Mathematics">Mathematics</option>
+              <option value="English">English</option>
+              <option value="Computer Science">Computer Science</option>
+              <option value="Physics">Physics</option>
+              <option value="Chemistry">Chemistry</option>
+              <option value="Biology">Biology</option>
+              <option value="General Science">General Science</option>
+            </select>
+
+            <select id="filter-status" class="filter-select">
+              <option value="all">All Status</option>
+              <option value="Active">Active</option>
+              <option value="On Leave">On Leave</option>
+              <option value="Resigned">Resigned</option>
+            </select>
+
+            <select id="filter-class" class="filter-select">
+              <option value="all">All Assigned Classes</option>
+              <option value="Class 6">Class 6</option>
+              <option value="Class 7">Class 7</option>
+              <option value="Class 8">Class 8</option>
+              <option value="Class 9">Class 9</option>
+              <option value="Class 10">Class 10</option>
+            </select>
+
+            <button id="btn-reset-filters" class="btn btn-outline btn-sm" title="Reset Filters">
+              <i class="fa-solid fa-rotate-left"></i> Reset
+            </button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h2>Faculty Directory</h2>
+              <p id="teacher-count-badge">Loading faculty members...</p>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table" id="teachers-table">
+              <thead>
+                <tr>
+                  <th>Teacher ID</th>
+                  <th>Faculty Name</th>
+                  <th>Primary Subject</th>
+                  <th>Assigned Classes</th>
+                  <th>Qualification</th>
+                  <th>Phone Number</th>
+                  <th>Monthly Salary</th>
+                  <th>Status</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="teachers-tbody">
+                <tr><td colspan="9"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <div>&copy; 2025-2026 <strong>SchoolConnect</strong> &bull; Bright Future Public School Management System</div>
+        <div class="footer-university">MUET SZAB Campus Khairpur Mir's</div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ADD / EDIT TEACHER MODAL -->
+  <div class="modal-backdrop" id="teacher-modal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3 id="teacher-modal-title"><i class="fa-solid fa-user-plus"></i> Register Faculty Member</h3>
+        <button class="modal-close-btn" onclick="Utils.closeModal('teacher-modal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="teacher-form">
+        <div class="modal-body">
+          <input type="hidden" id="teacher-db-id">
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="form-teacher-id">Teacher ID <span class="required">*</span></label>
+              <input type="text" id="form-teacher-id" class="form-control" required placeholder="e.g. TCH-2025-001">
+              <small class="form-helper">Unique faculty ID (Auto-generated)</small>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-teacher-name">Full Name <span class="required">*</span></label>
+              <input type="text" id="form-teacher-name" class="form-control" required placeholder="e.g. Sir Tariq Mehmood">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-teacher-email">Official Email <span class="required">*</span></label>
+              <input type="email" id="form-teacher-email" class="form-control" required placeholder="e.g. tariq@schoolconnect.edu.pk">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-teacher-phone">Phone Number <span class="required">*</span></label>
+              <input type="text" id="form-teacher-phone" class="form-control" required placeholder="e.g. 0300-1234567">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-teacher-qualification">Qualification <span class="required">*</span></label>
+              <input type="text" id="form-teacher-qualification" class="form-control" required placeholder="e.g. M.Sc Mathematics (MUET)">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-teacher-subject">Primary Subject <span class="required">*</span></label>
+              <input type="text" id="form-teacher-subject" class="form-control" required placeholder="e.g. Mathematics">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-teacher-subjects">Assigned Subjects</label>
+              <input type="text" id="form-teacher-subjects" class="form-control" placeholder="e.g. Mathematics, General Science (comma separated)">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-teacher-class">Primary Class Teacher Of</label>
+              <select id="form-teacher-class" class="form-control">
+                <option value="None">None (Subject Teacher Only)</option>
+                <option value="Class 6">Class 6</option>
+                <option value="Class 7">Class 7</option>
+                <option value="Class 8">Class 8</option>
+                <option value="Class 9">Class 9</option>
+                <option value="Class 10">Class 10</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-teacher-classes">Assigned Teaching Classes</label>
+              <input type="text" id="form-teacher-classes" class="form-control" placeholder="e.g. Class 9, Class 10 (comma separated)">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-teacher-salary">Monthly Salary (PKR) <span class="required">*</span></label>
+              <input type="number" id="form-teacher-salary" class="form-control" required min="0" step="500" value="45000">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-teacher-joining">Joining Date</label>
+              <input type="date" id="form-teacher-joining" class="form-control">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-teacher-status">Status</label>
+              <select id="form-teacher-status" class="form-control">
+                <option value="Active">Active</option>
+                <option value="On Leave">On Leave</option>
+                <option value="Resigned">Resigned</option>
+              </select>
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label" for="form-teacher-cnic">CNIC Number</label>
+              <input type="text" id="form-teacher-cnic" class="form-control" placeholder="e.g. 45203-1234567-1">
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label" for="form-teacher-address">Residential Address <span class="required">*</span></label>
+              <textarea id="form-teacher-address" class="form-control" rows="2" required placeholder="e.g. Civil Lines, Khairpur Mir's"></textarea>
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label" for="form-teacher-photo">Photo URL (Optional)</label>
+              <input type="url" id="form-teacher-photo" class="form-control" placeholder="https://images.unsplash.com/photo-...">
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="Utils.closeModal('teacher-modal')">Cancel</button>
+          <button type="submit" id="btn-save-teacher" class="btn btn-primary">
+            <i class="fa-solid fa-floppy-disk"></i> Save Teacher Record
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- VIEW TEACHER PROFILE MODAL -->
+  <div class="modal-backdrop" id="teacher-view-modal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-id-badge"></i> Faculty Detailed Profile</h3>
+        <button class="modal-close-btn" onclick="Utils.closeModal('teacher-view-modal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="teacher-view-content"></div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="Utils.closeModal('teacher-view-modal')">Close</button>
+        <button class="btn btn-primary" onclick="Utils.printElement('teacher-view-content', 'Teacher Profile')">
+          <i class="fa-solid fa-print"></i> Print Profile
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/teachers.js"></script>
+</body>
+</html>

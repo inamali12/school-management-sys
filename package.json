@@ -1,0 +1,31 @@
+{
+  "name": "schoolconnect",
+  "version": "1.0.0",
+  "description": "Smart School Management System for Pakistani Schools - MUET SZAB Campus Project",
+  "main": "backend/server.js",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node backend/server.js",
+    "seed": "node backend/utils/seedData.js",
+    "test": "node backend/utils/runTests.js"
+  },
+  "keywords": [
+    "school-management-system",
+    "muet",
+    "express",
+    "mongodb",
+    "education",
+    "pakistan"
+  ],
+  "author": "Department of Software Engineering, MUET SZAB Campus Khairpur Mir's",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.3.0",
+    "morgan": "^1.10.1"
+  }
+}

@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Classes & Sections - SchoolConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="brand-text">
+          <h2>SchoolConnect</h2>
+          <span>Bright Future School</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="menu-category">Main Navigation</li>
+        <li class="menu-item"><a href="dashboard.html" class="menu-link" id="nav-dashboard"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a></li>
+        <li class="menu-category">Core Modules</li>
+        <li class="menu-item" id="nav-students"><a href="students.html" class="menu-link"><i class="fa-solid fa-user-graduate"></i><span>Students</span></a></li>
+        <li class="menu-item" id="nav-teachers"><a href="teachers.html" class="menu-link"><i class="fa-solid fa-chalkboard-user"></i><span>Teachers</span></a></li>
+        <li class="menu-item" id="nav-classes"><a href="classes.html" class="menu-link active"><i class="fa-solid fa-school"></i><span>Classes & Sections</span></a></li>
+        <li class="menu-item" id="nav-attendance"><a href="attendance.html" class="menu-link"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a></li>
+        <li class="menu-item" id="nav-fees"><a href="fees.html" class="menu-link"><i class="fa-solid fa-receipt"></i><span>Fee Management</span></a></li>
+        <li class="menu-category">Administration</li>
+        <li class="menu-item" id="nav-reports"><a href="reports.html" class="menu-link"><i class="fa-solid fa-file-invoice"></i><span>Reports Hub</span></a></li>
+        <li class="menu-item" id="nav-users"><a href="users.html" class="menu-link"><i class="fa-solid fa-users-gear"></i><span>User Management</span></a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="user-avatar" id="sidebar-user-avatar">A</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-user-name">Administrator</div>
+            <div class="user-role-badge badge-admin" id="sidebar-user-role">ADMIN</div>
+          </div>
+          <button class="btn-sidebar-logout btn-logout" title="Logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="top-header">
+        <div class="header-left">
+          <button id="menu-toggle" class="menu-toggle-btn"><i class="fa-solid fa-bars"></i></button>
+          <div class="page-title-box">
+            <h1>Classes & Sections Management</h1>
+            <p>Define academic grades, section capacities, subjects, and assign class teachers</p>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button id="btn-open-add-class" class="btn btn-primary">
+            <i class="fa-solid fa-plus"></i> Add New Class
+          </button>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <!-- Classes Grid -->
+        <div class="stats-grid" id="classes-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+          <!-- Populated by classes.js -->
+          <div class="spinner"></div>
+        </div>
+
+        <!-- Class Details Card -->
+        <div class="card" id="class-detail-card" style="display: none;">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h2 id="class-detail-title">Class Students</h2>
+              <p id="class-detail-sub">Students enrolled in this grade</p>
+            </div>
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('class-detail-card').style.display='none'">Close Table</button>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Student ID</th>
+                  <th>Student Name</th>
+                  <th>Section</th>
+                  <th>Roll #</th>
+                  <th>Parent Contact</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="class-students-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <div>&copy; 2025-2026 <strong>SchoolConnect</strong> &bull; Bright Future Public School Management System</div>
+        <div class="footer-university">MUET SZAB Campus Khairpur Mir's</div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ADD / EDIT CLASS MODAL -->
+  <div class="modal-backdrop" id="class-modal">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="class-modal-title"><i class="fa-solid fa-school"></i> Add New Class</h3>
+        <button class="modal-close-btn" onclick="Utils.closeModal('class-modal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <form id="class-form">
+        <div class="modal-body">
+          <input type="hidden" id="class-db-id">
+
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label" for="form-class-name">Class Name <span class="required">*</span></label>
+              <input type="text" id="form-class-name" class="form-control" required placeholder="e.g. Class 10">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-class-grade">Numeric Grade (1-12) <span class="required">*</span></label>
+              <input type="number" id="form-class-grade" class="form-control" required min="1" max="12" value="9">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-class-sections">Sections</label>
+              <input type="text" id="form-class-sections" class="form-control" placeholder="e.g. A, B (comma separated)" value="A, B">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-class-teacher">Class Teacher Name</label>
+              <input type="text" id="form-class-teacher" class="form-control" placeholder="e.g. Sir Abdul Qadir Soomro">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-class-room">Room Number</label>
+              <input type="text" id="form-class-room" class="form-control" placeholder="e.g. Room 202" value="Room 101">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-class-fee">Monthly Tuition Fee (PKR) <span class="required">*</span></label>
+              <input type="number" id="form-class-fee" class="form-control" required min="0" step="100" value="3500">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-class-capacity">Class Capacity</label>
+              <input type="number" id="form-class-capacity" class="form-control" value="40">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-class-year">Academic Session</label>
+              <input type="text" id="form-class-year" class="form-control" value="2025-2026">
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label" for="form-class-subjects">Curriculum Subjects</label>
+              <textarea id="form-class-subjects" class="form-control" rows="2" placeholder="e.g. English, Mathematics, Physics, Chemistry, Urdu (comma separated)"></textarea>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="Utils.closeModal('class-modal')">Cancel</button>
+          <button type="submit" id="btn-save-class" class="btn btn-primary">
+            <i class="fa-solid fa-floppy-disk"></i> Save Class
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/classes.js"></script>
+</body>
+</html>

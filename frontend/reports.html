@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reports Hub - SchoolConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .reports-nav {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      overflow-x: auto;
+      padding-bottom: 0.5rem;
+    }
+
+    .report-tab-btn {
+      padding: 0.65rem 1.15rem;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+      font-size: 0.88rem;
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .report-tab-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    .report-tab-btn:hover:not(.active) {
+      background: #f1f5f9;
+      color: var(--text-main);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="brand-text">
+          <h2>SchoolConnect</h2>
+          <span>Bright Future School</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="menu-category">Main Navigation</li>
+        <li class="menu-item"><a href="dashboard.html" class="menu-link" id="nav-dashboard"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a></li>
+        <li class="menu-category">Core Modules</li>
+        <li class="menu-item" id="nav-students"><a href="students.html" class="menu-link"><i class="fa-solid fa-user-graduate"></i><span>Students</span></a></li>
+        <li class="menu-item" id="nav-teachers"><a href="teachers.html" class="menu-link"><i class="fa-solid fa-chalkboard-user"></i><span>Teachers</span></a></li>
+        <li class="menu-item" id="nav-classes"><a href="classes.html" class="menu-link"><i class="fa-solid fa-school"></i><span>Classes & Sections</span></a></li>
+        <li class="menu-item" id="nav-attendance"><a href="attendance.html" class="menu-link"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a></li>
+        <li class="menu-item" id="nav-fees"><a href="fees.html" class="menu-link"><i class="fa-solid fa-receipt"></i><span>Fee Management</span></a></li>
+        <li class="menu-category">Administration</li>
+        <li class="menu-item" id="nav-reports"><a href="reports.html" class="menu-link active"><i class="fa-solid fa-file-invoice"></i><span>Reports Hub</span></a></li>
+        <li class="menu-item" id="nav-users"><a href="users.html" class="menu-link"><i class="fa-solid fa-users-gear"></i><span>User Management</span></a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="user-avatar" id="sidebar-user-avatar">A</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-user-name">Administrator</div>
+            <div class="user-role-badge badge-admin" id="sidebar-user-role">ADMIN</div>
+          </div>
+          <button class="btn-sidebar-logout btn-logout" title="Logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="top-header">
+        <div class="header-left">
+          <button id="menu-toggle" class="menu-toggle-btn"><i class="fa-solid fa-bars"></i></button>
+          <div class="page-title-box">
+            <h1>Reports & Analytics Hub</h1>
+            <p>Generate academic, attendance, payroll, and fee collection reports</p>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button id="btn-export-active-report" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-file-csv"></i> Export Current to CSV
+          </button>
+          <button onclick="window.print()" class="btn btn-primary btn-sm">
+            <i class="fa-solid fa-print"></i> Print Official Report
+          </button>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <!-- Report Category Navigation Tabs -->
+        <div class="reports-nav">
+          <button class="report-tab-btn active" onclick="switchReport('admissions')">
+            <i class="fa-solid fa-user-graduate"></i> Student Admissions
+          </button>
+          <button class="report-tab-btn" onclick="switchReport('attendance-daily')">
+            <i class="fa-solid fa-calendar-day"></i> Daily Attendance
+          </button>
+          <button class="report-tab-btn" onclick="switchReport('attendance-monthly')">
+            <i class="fa-solid fa-calendar-days"></i> Monthly Attendance %
+          </button>
+          <button class="report-tab-btn" onclick="switchReport('fees-collection')">
+            <i class="fa-solid fa-sack-dollar"></i> Fee Collections
+          </button>
+          <button class="report-tab-btn" onclick="switchReport('fees-defaulters')">
+            <i class="fa-solid fa-triangle-exclamation"></i> Fee Defaulters
+          </button>
+          <button class="report-tab-btn" onclick="switchReport('teachers')">
+            <i class="fa-solid fa-chalkboard-user"></i> Faculty & Payroll
+          </button>
+        </div>
+
+        <!-- Dynamic Report Container -->
+        <div id="report-view-container">
+          <div class="spinner"></div>
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <div>&copy; 2025-2026 <strong>SchoolConnect</strong> &bull; Bright Future Public School Management System</div>
+        <div class="footer-university">MUET SZAB Campus Khairpur Mir's</div>
+      </footer>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/reports.js"></script>
+</body>
+</html>

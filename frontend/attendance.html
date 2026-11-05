@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance Management - SchoolConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+  <style>
+    .attendance-status-group {
+      display: inline-flex;
+      background: #f1f5f9;
+      padding: 3px;
+      border-radius: var(--radius-md);
+      gap: 3px;
+    }
+
+    .att-btn {
+      border: none;
+      background: transparent;
+      padding: 0.35rem 0.65rem;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      color: #64748b;
+    }
+
+    .att-btn:hover {
+      background: rgba(255, 255, 255, 0.6);
+    }
+
+    .att-btn.active.present { background: var(--success); color: white; box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3); }
+    .att-btn.active.absent { background: var(--danger); color: white; box-shadow: 0 2px 4px rgba(239, 68, 68, 0.3); }
+    .att-btn.active.late { background: var(--warning); color: white; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.3); }
+    .att-btn.active.leave { background: var(--accent); color: white; box-shadow: 0 2px 4px rgba(59, 130, 246, 0.3); }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 0.5rem;
+    }
+
+    .tab-btn {
+      padding: 0.65rem 1.25rem;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: var(--radius-md);
+      transition: var(--transition);
+      font-size: 0.92rem;
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="brand-text">
+          <h2>SchoolConnect</h2>
+          <span>Bright Future School</span>
+        </div>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="menu-category">Main Navigation</li>
+        <li class="menu-item"><a href="dashboard.html" class="menu-link" id="nav-dashboard"><i class="fa-solid fa-chart-pie"></i><span>Dashboard</span></a></li>
+        <li class="menu-category">Core Modules</li>
+        <li class="menu-item" id="nav-students"><a href="students.html" class="menu-link"><i class="fa-solid fa-user-graduate"></i><span>Students</span></a></li>
+        <li class="menu-item" id="nav-teachers"><a href="teachers.html" class="menu-link"><i class="fa-solid fa-chalkboard-user"></i><span>Teachers</span></a></li>
+        <li class="menu-item" id="nav-classes"><a href="classes.html" class="menu-link"><i class="fa-solid fa-school"></i><span>Classes & Sections</span></a></li>
+        <li class="menu-item" id="nav-attendance"><a href="attendance.html" class="menu-link active"><i class="fa-solid fa-calendar-check"></i><span>Attendance</span></a></li>
+        <li class="menu-item" id="nav-fees"><a href="fees.html" class="menu-link"><i class="fa-solid fa-receipt"></i><span>Fee Management</span></a></li>
+        <li class="menu-category">Administration</li>
+        <li class="menu-item" id="nav-reports"><a href="reports.html" class="menu-link"><i class="fa-solid fa-file-invoice"></i><span>Reports Hub</span></a></li>
+        <li class="menu-item" id="nav-users"><a href="users.html" class="menu-link"><i class="fa-solid fa-users-gear"></i><span>User Management</span></a></li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="user-avatar" id="sidebar-user-avatar">A</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-user-name">Administrator</div>
+            <div class="user-role-badge badge-admin" id="sidebar-user-role">ADMIN</div>
+          </div>
+          <button class="btn-sidebar-logout btn-logout" title="Logout"><i class="fa-solid fa-arrow-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-wrapper">
+      <header class="top-header">
+        <div class="header-left">
+          <button id="menu-toggle" class="menu-toggle-btn"><i class="fa-solid fa-bars"></i></button>
+          <div class="page-title-box">
+            <h1>Attendance Management</h1>
+            <p>Mark daily class attendance, prevent duplicates, and track historical student presence</p>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button id="btn-export-attendance" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-file-csv"></i> Export CSV
+          </button>
+          <button onclick="window.print()" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-print"></i> Print
+          </button>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <!-- Navigation Tabs: Mark Attendance vs View History -->
+        <div class="nav-tabs">
+          <button class="tab-btn active" id="tab-mark-btn" onclick="switchTab('mark')">
+            <i class="fa-solid fa-clipboard-check"></i> Mark Daily Attendance
+          </button>
+          <button class="tab-btn" id="tab-history-btn" onclick="switchTab('history')">
+            <i class="fa-solid fa-clock-rotate-left"></i> Attendance Records & History
+          </button>
+        </div>
+
+        <!-- ==============================================
+             TAB 1: MARK DAILY ATTENDANCE
+             ============================================== -->
+        <div id="tab-mark-section">
+          <div class="toolbar-container">
+            <div class="filters-group" style="width: 100%; justify-content: space-between;">
+              <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+                <div>
+                  <label class="form-label" for="mark-class-select">Select Class</label>
+                  <select id="mark-class-select" class="filter-select">
+                    <option value="Class 6">Class 6</option>
+                    <option value="Class 7">Class 7</option>
+                    <option value="Class 8">Class 8</option>
+                    <option value="Class 9" selected>Class 9</option>
+                    <option value="Class 10">Class 10</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="form-label" for="mark-section-select">Section</label>
+                  <select id="mark-section-select" class="filter-select">
+                    <option value="all">All Sections</option>
+                    <option value="A" selected>Section A</option>
+                    <option value="B">Section B</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="form-label" for="mark-date-input">Attendance Date</label>
+                  <input type="date" id="mark-date-input" class="form-control" style="padding: 0.55rem 0.85rem;">
+                </div>
+
+                <div style="margin-top: 1.4rem;">
+                  <button id="btn-load-class-students" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-users"></i> Load Students
+                  </button>
+                </div>
+              </div>
+
+              <div style="margin-top: 1.4rem; display: flex; gap: 0.5rem;">
+                <button id="btn-mark-all-present" class="btn btn-success btn-sm">
+                  <i class="fa-solid fa-check-double"></i> Mark All Present
+                </button>
+                <button id="btn-save-batch-attendance" class="btn btn-primary btn-sm">
+                  <i class="fa-solid fa-floppy-disk"></i> Save Attendance
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h2 id="mark-sheet-title">Attendance Sheet &bull; Class 9-A</h2>
+                <p id="mark-sheet-date">Date: Today</p>
+              </div>
+              <div id="mark-live-summary">
+                <span class="badge badge-present" id="badge-present-count">Present: 0</span>
+                <span class="badge badge-absent" id="badge-absent-count">Absent: 0</span>
+                <span class="badge badge-late" id="badge-late-count">Late: 0</span>
+                <span class="badge badge-leave" id="badge-leave-count">Leave: 0</span>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Roll #</th>
+                    <th>Student ID</th>
+                    <th>Student Name</th>
+                    <th>Status Selector</th>
+                    <th>Remarks</th>
+                  </tr>
+                </thead>
+                <tbody id="attendance-mark-tbody">
+                  <tr><td colspan="5" class="empty-state">Select class and click "Load Students"</td></tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="card-header" style="justify-content: flex-end; background: #fafafa; border-top: 1px solid var(--border-color); border-bottom: none;">
+              <button id="btn-save-batch-attendance-bottom" class="btn btn-primary">
+                <i class="fa-solid fa-floppy-disk"></i> Save Class Attendance
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ==============================================
+             TAB 2: ATTENDANCE RECORDS & HISTORY
+             ============================================== -->
+        <div id="tab-history-section" style="display: none;">
+          <!-- History Stats Bar -->
+          <div class="stats-grid" id="history-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); margin-bottom: 1.5rem;">
+            <div class="stat-card success">
+              <div class="stat-content">
+                <h3>Present</h3>
+                <div class="stat-number" id="hist-present" style="color: var(--success);">0</div>
+              </div>
+              <div class="stat-icon success"><i class="fa-solid fa-user-check"></i></div>
+            </div>
+            <div class="stat-card danger">
+              <div class="stat-content">
+                <h3>Absent</h3>
+                <div class="stat-number" id="hist-absent" style="color: var(--danger);">0</div>
+              </div>
+              <div class="stat-icon danger"><i class="fa-solid fa-user-xmark"></i></div>
+            </div>
+            <div class="stat-card warning">
+              <div class="stat-content">
+                <h3>Late</h3>
+                <div class="stat-number" id="hist-late" style="color: #b45309;">0</div>
+              </div>
+              <div class="stat-icon warning"><i class="fa-solid fa-clock"></i></div>
+            </div>
+            <div class="stat-card info">
+              <div class="stat-content">
+                <h3>Leave</h3>
+                <div class="stat-number" id="hist-leave" style="color: var(--accent);">0</div>
+              </div>
+              <div class="stat-icon info"><i class="fa-solid fa-calendar-minus"></i></div>
+            </div>
+          </div>
+
+          <!-- History Filters Toolbar -->
+          <div class="toolbar-container">
+            <div class="search-box">
+              <i class="fa-solid fa-magnifying-glass"></i>
+              <input type="text" id="hist-search-student" placeholder="Search by Student ID or Name...">
+            </div>
+
+            <div class="filters-group">
+              <input type="date" id="hist-date-filter" class="form-control" style="padding: 0.55rem 0.85rem;" title="Filter by Date">
+
+              <select id="hist-class-filter" class="filter-select">
+                <option value="all">All Classes</option>
+                <option value="Class 6">Class 6</option>
+                <option value="Class 7">Class 7</option>
+                <option value="Class 8">Class 8</option>
+                <option value="Class 9">Class 9</option>
+                <option value="Class 10">Class 10</option>
+              </select>
+
+              <select id="hist-status-filter" class="filter-select">
+                <option value="all">All Status</option>
+                <option value="Present">Present</option>
+                <option value="Absent">Absent</option>
+                <option value="Late">Late</option>
+                <option value="Leave">Leave</option>
+              </select>
+
+              <button id="btn-reset-hist-filters" class="btn btn-outline btn-sm">
+                <i class="fa-solid fa-rotate-left"></i> Reset
+              </button>
+            </div>
+          </div>
+
+          <!-- History Table Card -->
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title-group">
+                <h2>Attendance Logs</h2>
+                <p id="history-count-badge">Showing records</p>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Student ID</th>
+                    <th>Student Name</th>
+                    <th>Class & Sec</th>
+                    <th>Status</th>
+                    <th>Remarks</th>
+                    <th>Marked By</th>
+                    <th style="text-align: right;">Action</th>
+                  </tr>
+                </thead>
+                <tbody id="attendance-history-tbody">
+                  <tr><td colspan="8"><div class="spinner"></div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <div>&copy; 2025-2026 <strong>SchoolConnect</strong> &bull; Bright Future Public School Management System</div>
+        <div class="footer-university">MUET SZAB Campus Khairpur Mir's</div>
+      </footer>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/attendance.js"></script>
+</body>
+</html>
