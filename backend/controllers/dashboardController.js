@@ -78,16 +78,22 @@ exports.getDashboardStats = async (req, res, next) => {
     if (user.role === 'parent') {
       const allowedIds = (user.studentIds || []).map(id => String(id).toUpperCase());
       const allStudents = await Storage.students.find({});
-      const children = allStudents.filter(s => allowedIds.includes(String(s.studentId).toUpperCase()));
+      const children = allStudents.filter(s =>
+        allowedIds.includes(String(s._id).toUpperCase()) ||
+        allowedIds.includes(String(s.studentId).toUpperCase()) ||
+        (s.parentId && String(s.parentId).toUpperCase() === String(user._id).toUpperCase()) ||
+        (s.parentEmail && s.parentEmail.toLowerCase() === (user.email || '').toLowerCase())
+      );
 
       const childrenDetails = [];
       for (const child of children) {
         const attStats = await Storage.attendance.getStats({ studentId: child.studentId });
         const childFees = await Storage.fees.find({ studentId: child.studentId });
         const todayAtt = await Storage.attendance.find({ studentId: child.studentId, date: today });
+        const childObj = child.toObject ? child.toObject() : { ...child };
 
         childrenDetails.push({
-          ...child,
+          ...childObj,
           attendanceStats: attStats,
           feeRecords: childFees,
           todayStatus: todayAtt.length > 0 ? todayAtt[0].status : 'Not Marked'

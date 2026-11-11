@@ -104,7 +104,9 @@ const API = (() => {
       getNextId: () => request('/students/generate/next-id'),
       create: (data) => request('/students', { method: 'POST', body: JSON.stringify(data) }),
       update: (id, data) => request(`/students/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-      delete: (id) => request(`/students/${id}`, { method: 'DELETE' })
+      delete: (id) => request(`/students/${id}`, { method: 'DELETE' }),
+      linkParent: (id, data) => request(`/students/${id}/link-parent`, { method: 'POST', body: JSON.stringify(data) }),
+      unlinkParent: (id) => request(`/students/${id}/unlink-parent`, { method: 'DELETE' })
     },
 
     // Teacher Management Endpoints
@@ -197,6 +199,21 @@ const API = (() => {
       create: (data) => request('/users', { method: 'POST', body: JSON.stringify(data) }),
       update: (id, data) => request(`/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
       delete: (id) => request(`/users/${id}`, { method: 'DELETE' })
+    },
+
+    // Parent Management & Relationship Endpoints
+    parents: {
+      getAll: (params = {}) => {
+        const query = new URLSearchParams(params).toString();
+        return request(`/parents?${query}`);
+      },
+      getById: (id) => request(`/parents/${id}`),
+      create: (data) => request('/parents', { method: 'POST', body: JSON.stringify(data) }),
+      update: (id, data) => request(`/parents/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+      delete: (id) => request(`/parents/${id}`, { method: 'DELETE' }),
+      linkStudent: (id, studentId) => request(`/parents/${id}/link-student`, { method: 'POST', body: JSON.stringify({ studentId }) }),
+      unlinkStudent: (id, studentId) => request(`/parents/${id}/unlink-student/${studentId}`, { method: 'DELETE' }),
+      getMyChildren: () => request('/parent/my-children')
     }
   };
 })();

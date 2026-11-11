@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Parent Management - SchoolConnect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+        <div class="brand-text">
+          <h2>SchoolConnect</h2>
+          <span>Bright Future School</span>
+        </div>
+        <button id="sidebar-close-btn" class="sidebar-close-btn" title="Close Sidebar" aria-label="Close Sidebar">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <ul class="sidebar-menu">
+        <li class="menu-category">Main Navigation</li>
+        <li class="menu-item">
+          <a href="dashboard.html" class="menu-link" id="nav-dashboard">
+            <i class="fa-solid fa-chart-pie"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+
+        <li class="menu-category">Core Modules</li>
+        <li class="menu-item" id="nav-students">
+          <a href="students.html" class="menu-link">
+            <i class="fa-solid fa-user-graduate"></i>
+            <span>Students</span>
+          </a>
+        </li>
+        <li class="menu-item" id="nav-parents">
+          <a href="parents.html" class="menu-link active">
+            <i class="fa-solid fa-users-between-lines"></i>
+            <span>Parent Management</span>
+          </a>
+        </li>
+        <li class="menu-item" id="nav-teachers">
+          <a href="teachers.html" class="menu-link">
+            <i class="fa-solid fa-chalkboard-user"></i>
+            <span>Teachers</span>
+          </a>
+        </li>
+        <li class="menu-item" id="nav-classes">
+          <a href="classes.html" class="menu-link">
+            <i class="fa-solid fa-school"></i>
+            <span>Classes & Sections</span>
+          </a>
+        </li>
+        <li class="menu-item" id="nav-attendance">
+          <a href="attendance.html" class="menu-link">
+            <i class="fa-solid fa-calendar-check"></i>
+            <span>Attendance</span>
+          </a>
+        </li>
+        <li class="menu-item" id="nav-fees">
+          <a href="fees.html" class="menu-link">
+            <i class="fa-solid fa-receipt"></i>
+            <span>Fee Management</span>
+          </a>
+        </li>
+
+        <li class="menu-category">Administration</li>
+        <li class="menu-item" id="nav-reports">
+          <a href="reports.html" class="menu-link">
+            <i class="fa-solid fa-file-invoice"></i>
+            <span>Reports Hub</span>
+          </a>
+        </li>
+        <li class="menu-item" id="nav-users">
+          <a href="users.html" class="menu-link">
+            <i class="fa-solid fa-users-gear"></i>
+            <span>User Management</span>
+          </a>
+        </li>
+      </ul>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="user-avatar" id="sidebar-user-avatar">A</div>
+          <div class="user-info">
+            <div class="user-name" id="sidebar-user-name">Administrator</div>
+            <div class="user-role-badge badge-admin" id="sidebar-user-role">ADMIN</div>
+          </div>
+          <button class="btn-sidebar-logout btn-logout" title="Logout">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Sidebar Dark Backdrop Overlay for Mobile -->
+    <div id="sidebar-overlay" class="sidebar-overlay"></div>
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper">
+      <header class="top-header">
+        <div class="header-left">
+          <button id="menu-toggle" class="menu-toggle-btn"><i class="fa-solid fa-bars"></i></button>
+          <div class="page-title-box">
+            <h1>Parent Management</h1>
+            <p>Manage guardian profiles, link parents with students, and oversee parent portal access</p>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <button id="btn-open-add-parent" class="btn btn-primary">
+            <i class="fa-solid fa-user-plus"></i> Add New Parent
+          </button>
+          <button id="btn-open-link-student" class="btn btn-secondary">
+            <i class="fa-solid fa-link"></i> Link Student
+          </button>
+          <button id="btn-export-parents" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-file-csv"></i> Export CSV
+          </button>
+          <button onclick="window.print()" class="btn btn-outline btn-sm">
+            <i class="fa-solid fa-print"></i> Print
+          </button>
+        </div>
+      </header>
+
+      <main class="content-body">
+        <!-- Summary Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(37, 99, 235, 0.1); color: var(--primary);">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Total Parents</span>
+              <h3 class="stat-value" id="stat-total-parents">--</h3>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.1); color: var(--success);">
+              <i class="fa-solid fa-user-check"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Linked Parents</span>
+              <h3 class="stat-value" id="stat-linked-parents">--</h3>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(245, 158, 11, 0.1); color: var(--warning);">
+              <i class="fa-solid fa-user-clock"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Unlinked Parents</span>
+              <h3 class="stat-value" id="stat-unlinked-parents">--</h3>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon" style="background: rgba(139, 92, 246, 0.1); color: #8b5cf6;">
+              <i class="fa-solid fa-people-arrows"></i>
+            </div>
+            <div class="stat-info">
+              <span class="stat-label">Active Relationships</span>
+              <h3 class="stat-value" id="stat-total-relationships">--</h3>
+            </div>
+          </div>
+        </div>
+
+        <!-- Search and Filter Toolbar -->
+        <div class="toolbar-container">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="search-input" placeholder="Search by parent name, email, phone, or student name/ID...">
+          </div>
+
+          <div class="filters-group">
+            <select id="filter-status" class="filter-select">
+              <option value="all">All Parents</option>
+              <option value="linked">Linked (With Children)</option>
+              <option value="unlinked">Unlinked (No Children)</option>
+            </select>
+
+            <button id="btn-reset-filters" class="btn btn-outline btn-sm" title="Reset Filters">
+              <i class="fa-solid fa-rotate-left"></i> Reset
+            </button>
+          </div>
+        </div>
+
+        <!-- Parents Data Table Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h2>Parents & Guardians Directory</h2>
+              <p id="parent-count-badge">Loading parent accounts...</p>
+            </div>
+          </div>
+
+          <div class="table-responsive">
+            <table class="data-table" id="parents-table">
+              <thead>
+                <tr>
+                  <th>Parent / Guardian</th>
+                  <th>Contact Info</th>
+                  <th>Linked Children</th>
+                  <th>Relationship Status</th>
+                  <th>Registered Date</th>
+                  <th style="text-align: right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="parents-tbody">
+                <tr>
+                  <td colspan="6"><div class="spinner"></div></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+
+      <footer class="app-footer">
+        <div>&copy; 2025-2026 <strong>SchoolConnect</strong> &bull; Bright Future Public School Management System</div>
+        <div class="footer-university">MUET SZAB Campus Khairpur Mir's</div>
+      </footer>
+    </div>
+  </div>
+
+  <!-- ADD / EDIT PARENT MODAL -->
+  <div class="modal-backdrop" id="parent-modal">
+    <div class="modal-dialog modal-md">
+      <div class="modal-header">
+        <h3 id="parent-modal-title"><i class="fa-solid fa-user-plus"></i> Register Parent Account</h3>
+        <button class="modal-close-btn" onclick="Utils.closeModal('parent-modal')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="parent-form">
+        <div class="modal-body">
+          <input type="hidden" id="parent-db-id">
+
+          <div class="form-grid">
+            <div class="form-group col-span-2">
+              <label class="form-label" for="form-parent-name">Full Name <span class="required">*</span></label>
+              <input type="text" id="form-parent-name" class="form-control" required placeholder="e.g. Ghulam Mustafa Soomro">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-parent-email">Email Address <span class="required">*</span></label>
+              <input type="email" id="form-parent-email" class="form-control" required placeholder="e.g. parent@schoolconnect.edu.pk">
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="form-parent-phone">Phone Number <span class="required">*</span></label>
+              <input type="text" id="form-parent-phone" class="form-control" required placeholder="e.g. 0300-9871122">
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label" for="form-parent-password" id="label-parent-password">Account Password <span class="required">*</span></label>
+              <input type="password" id="form-parent-password" class="form-control" placeholder="Minimum 6 characters">
+              <small class="form-helper" id="helper-parent-password">Password for Parent Portal login</small>
+            </div>
+
+            <div class="form-group col-span-2">
+              <label class="form-label" for="form-parent-address">Residential Address</label>
+              <textarea id="form-parent-address" class="form-control" rows="2" placeholder="e.g. Station Road, Near Clock Tower, Khairpur Mir's"></textarea>
+            </div>
+
+            <div class="form-group col-span-2" id="group-initial-student">
+              <label class="form-label" for="form-initial-student">Link First Student (Optional)</label>
+              <select id="form-initial-student" class="form-control">
+                <option value="">-- Do not link right now --</option>
+              </select>
+              <small class="form-helper">You can link more children anytime after creating the account.</small>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="Utils.closeModal('parent-modal')">Cancel</button>
+          <button type="submit" id="btn-save-parent" class="btn btn-primary">
+            <i class="fa-solid fa-floppy-disk"></i> Save Parent Account
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- LINK STUDENT TO PARENT MODAL -->
+  <div class="modal-backdrop" id="link-student-modal">
+    <div class="modal-dialog modal-md">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-link"></i> Link Student to Parent</h3>
+        <button class="modal-close-btn" onclick="Utils.closeModal('link-student-modal')">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="link-student-form">
+        <div class="modal-body">
+          <div class="form-group" style="margin-bottom: var(--spacing-md);">
+            <label class="form-label" for="link-select-parent">Select Parent / Guardian <span class="required">*</span></label>
+            <select id="link-select-parent" class="form-control" required>
+              <option value="">-- Choose a Parent Account --</option>
+            </select>
+          </div>
+
+          <div class="form-group" style="margin-bottom: var(--spacing-md);">
+            <label class="form-label" for="link-select-student">Select Student to Link <span class="required">*</span></label>
+            <select id="link-select-student" class="form-control" required>
+              <option value="">-- Choose a Student --</option>
+            </select>
+            <small class="form-helper">Search or select the student enrolled in SchoolConnect</small>
+          </div>
+
+          <div class="alert alert-info" id="link-preview-box" style="display: none; padding: 12px; border-radius: 6px; font-size: 0.9rem; margin-top: 10px;">
+            <i class="fa-solid fa-circle-info"></i> <span id="link-preview-text"></span>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline" onclick="Utils.closeModal('link-student-modal')">Cancel</button>
+          <button type="submit" id="btn-submit-link" class="btn btn-primary">
+            <i class="fa-solid fa-link"></i> Confirm Link
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- VIEW PARENT DETAILS & CHILDREN MODAL -->
+  <div class="modal-backdrop" id="parent-view-modal">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-header">
+        <h3><i class="fa-solid fa-id-card"></i> Parent Profile & Linked Children</h3>
+        <button class="modal-close-btn" onclick="Utils.closeModal('parent-view-modal')"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+      <div class="modal-body" id="parent-view-content">
+        <!-- Rendered dynamically -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="Utils.closeModal('parent-view-modal')">Close</button>
+        <button class="btn btn-secondary" id="btn-modal-add-child">
+          <i class="fa-solid fa-plus"></i> Link Another Child
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/parents.js"></script>
+</body>
+</html>
+

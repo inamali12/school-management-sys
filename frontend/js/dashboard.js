@@ -479,6 +479,22 @@ function renderParentDashboard(data) {
 
   let html = `
     <div style="display: flex; flex-direction: column; gap: 2rem;">
+      ${children.length > 1 ? `
+        <div class="child-tabs-bar" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; background: var(--bg-surface); padding: 10px 14px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+          <span style="font-size: 0.85rem; font-weight: 600; color: var(--text-muted); margin-right: 6px;">
+            <i class="fa-solid fa-users"></i> Children:
+          </span>
+          <button type="button" class="btn btn-primary btn-sm child-tab-btn active" onclick="filterParentChild('all', this)">
+            All Children (${children.length})
+          </button>
+          ${children.map(c => `
+            <button type="button" class="btn btn-outline btn-sm child-tab-btn" onclick="filterParentChild('${c.studentId}', this)">
+              <i class="fa-solid fa-child"></i> ${c.fullName} (${c.className}-${c.section})
+            </button>
+          `).join('')}
+        </div>
+      ` : ''}
+
       ${children.map(child => {
         const attStats = child.attendanceStats || { total: 0, present: 0, absent: 0, attendanceRate: 0 };
         const feeRecords = child.feeRecords || [];
@@ -491,7 +507,7 @@ function renderParentDashboard(data) {
         }
 
         return `
-          <div class="card" style="border: 2px solid #e0f2fe;">
+          <div class="card child-card-container" data-child-id="${child.studentId}" style="border: 2px solid #e0f2fe;">
             <div class="card-header" style="background: linear-gradient(90deg, #f0f9ff, #ffffff);">
               <div class="table-user-cell">
                 <img src="${child.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="table-avatar" style="width: 52px; height: 52px;" alt="${child.fullName}">
@@ -585,6 +601,27 @@ function renderParentDashboard(data) {
 
   view.innerHTML = html;
 }
+
+// Child filter handler for Parent Portal with multiple children
+window.filterParentChild = function(childId, btn) {
+  document.querySelectorAll('.child-tab-btn').forEach(b => {
+    b.classList.remove('active', 'btn-primary');
+    b.classList.add('btn-outline');
+  });
+  if (btn) {
+    btn.classList.add('active', 'btn-primary');
+    btn.classList.remove('btn-outline');
+  }
+
+  const cards = document.querySelectorAll('.child-card-container');
+  cards.forEach(card => {
+    if (childId === 'all' || card.getAttribute('data-child-id') === childId) {
+      card.style.display = 'block';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+};
 
 // ----------------------------------------------------
 // 4. STUDENT PORTAL DASHBOARD

@@ -15,7 +15,8 @@ const generateToken = (id, role) => {
 // @access  Public
 exports.login = async (req, res, next) => {
   try {
-    const { username, password } = req.body;
+    const username = req.body.username || req.body.email;
+    const { password } = req.body;
 
     if (!username || !password) {
       return res.status(400).json({

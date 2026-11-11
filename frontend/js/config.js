@@ -1,25 +1,37 @@
+
 /**
  * SchoolConnect - Frontend Runtime Configuration
- * Automatically detects local development vs production cloud deployment (Vercel / Render)
  */
+
 const CONFIG = (() => {
   const isFileProtocol = window.location.protocol === 'file:';
-  const isLocalDevHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
 
-  // Base API URL Resolution:
-  // 1. If opened directly via file:// (double-clicking HTML or start command), route to local backend on 5000
-  // 2. If running via a separate dev server (e.g. VS Code Live Server on port 5500, 3000), route to port 5000
-  // 3. If running on port 5000 directly or deployed in production (Vercel, Render), use relative path ""
-  let apiBase = '';
+  const isLocalDevHost =
+    window.location.hostname === 'localhost' ||
+    window.location.hostname === '127.0.0.1';
+
+  const RENDER_API_URL =
+    'https://school-management-sys-n8wf.onrender.com';
+
+  let apiBase = RENDER_API_URL;
+
+  // Local development using separate Live Server
   if (isFileProtocol) {
     apiBase = 'http://localhost:5000';
-  } else if (isLocalDevHost && window.location.port && window.location.port !== '5000') {
+  } else if (
+    isLocalDevHost &&
+    window.location.port &&
+    window.location.port !== '5000'
+  ) {
     apiBase = 'http://localhost:5000';
-  } else {
+  } else if (
+    isLocalDevHost &&
+    window.location.port === '5000'
+  ) {
     apiBase = '';
   }
 
-  // Allow optional runtime override via window.APP_CONFIG
+  // Optional runtime override
   if (window.APP_CONFIG && window.APP_CONFIG.API_URL) {
     apiBase = window.APP_CONFIG.API_URL;
   }
@@ -36,4 +48,3 @@ const CONFIG = (() => {
 if (typeof window !== 'undefined') {
   window.CONFIG = CONFIG;
 }
-

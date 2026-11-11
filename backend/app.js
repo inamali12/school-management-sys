@@ -14,6 +14,7 @@ const feeRoutes = require('./routes/feeRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const reportRoutes = require('./routes/reportRoutes');
 const userRoutes = require('./routes/userRoutes');
+const parentRoutes = require('./routes/parentRoutes');
 
 const app = express();
 
@@ -53,6 +54,8 @@ app.use('/api/fees', feeRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/parents', parentRoutes);
+app.use('/api/parent', parentRoutes);
 
 // Root route: serve frontend
 app.get('/', (req, res) => {

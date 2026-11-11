@@ -6,7 +6,9 @@ const {
   generateStudentId,
   createStudent,
   updateStudent,
-  deleteStudent
+  deleteStudent,
+  linkParent,
+  unlinkParent
 } = require('../controllers/studentController');
 const { protect, authorize } = require('../middleware/auth');
 
@@ -23,6 +25,9 @@ router.route('/:id')
   .get(getStudentById)
   .put(authorize('admin'), updateStudent)
   .delete(authorize('admin'), deleteStudent);
+
+router.post('/:id/link-parent', authorize('admin'), linkParent);
+router.delete('/:id/unlink-parent', authorize('admin'), unlinkParent);
 
 module.exports = router;
 

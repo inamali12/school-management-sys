@@ -68,15 +68,17 @@ const Auth = (() => {
     const navFees = document.getElementById('nav-fees');
     const navReports = document.getElementById('nav-reports');
     const navUsers = document.getElementById('nav-users');
+    const navParents = document.getElementById('nav-parents');
 
     const currentPath = window.location.pathname;
 
     if (role === 'teacher') {
-      // Teachers cannot manage fees or users
+      // Teachers cannot manage fees, users, or parents
       if (navFees) navFees.style.display = 'none';
       if (navUsers) navUsers.style.display = 'none';
+      if (navParents) navParents.style.display = 'none';
       // Page guard
-      if (currentPath.includes('fees.html') || currentPath.includes('users.html')) {
+      if (currentPath.includes('fees.html') || currentPath.includes('users.html') || currentPath.includes('parents.html')) {
         window.location.href = 'dashboard.html';
       }
     } else if (role === 'student') {
@@ -85,8 +87,9 @@ const Auth = (() => {
       if (navClasses) navClasses.style.display = 'none';
       if (navReports) navReports.style.display = 'none';
       if (navUsers) navUsers.style.display = 'none';
+      if (navParents) navParents.style.display = 'none';
       // Page guard
-      if (currentPath.includes('teachers.html') || currentPath.includes('classes.html') || currentPath.includes('reports.html') || currentPath.includes('users.html')) {
+      if (currentPath.includes('teachers.html') || currentPath.includes('classes.html') || currentPath.includes('reports.html') || currentPath.includes('users.html') || currentPath.includes('parents.html')) {
         window.location.href = 'dashboard.html';
       }
     } else if (role === 'parent') {
@@ -95,8 +98,9 @@ const Auth = (() => {
       if (navClasses) navClasses.style.display = 'none';
       if (navReports) navReports.style.display = 'none';
       if (navUsers) navUsers.style.display = 'none';
+      if (navParents) navParents.style.display = 'none';
       // Page guard
-      if (currentPath.includes('teachers.html') || currentPath.includes('classes.html') || currentPath.includes('reports.html') || currentPath.includes('users.html')) {
+      if (currentPath.includes('teachers.html') || currentPath.includes('classes.html') || currentPath.includes('reports.html') || currentPath.includes('users.html') || currentPath.includes('parents.html')) {
         window.location.href = 'dashboard.html';
       }
     }

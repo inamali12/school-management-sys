@@ -19,6 +19,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btn-open-add-student').addEventListener('click', openAddModal);
   document.getElementById('student-form').addEventListener('submit', handleSaveStudent);
 
+  const linkParentForm = document.getElementById('student-link-parent-form');
+  if (linkParentForm) {
+    linkParentForm.addEventListener('submit', handleStudentSaveParentLink);
+  }
+
   // Search & Filter listeners
   const searchInput = document.getElementById('search-input');
   const classFilter = document.getElementById('filter-class');
@@ -312,6 +317,57 @@ async function viewStudentDetails(id) {
           <div style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">${att.attendanceRate}%</div>
         </div>
       </div>
+
+      <!-- Linked Parent / Guardian Portal Account Section -->
+      <div style="border-top: 1px solid var(--border-color); padding-top: 1.25rem; margin-top: 1rem;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 8px;">
+          <h4 style="font-size: 1rem; font-weight: 700; margin: 0; color: var(--text-main);">
+            <i class="fa-solid fa-users-between-lines" style="color: var(--primary); margin-right: 6px;"></i>
+            Parent Portal Account
+          </h4>
+          ${s.linkedParent ? `
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-outline btn-sm" onclick="openStudentChangeParentModal('${s._id}', '${s.fullName.replace(/'/g, "\\'")}', '${s.linkedParent._id}')">
+                <i class="fa-solid fa-arrows-rotate"></i> Change Parent
+              </button>
+              <button class="btn btn-outline btn-sm" style="color: var(--danger); border-color: var(--danger);" onclick="handleStudentUnlinkParent('${s._id}', '${s.fullName.replace(/'/g, "\\'")}')">
+                <i class="fa-solid fa-unlink"></i> Unlink Parent
+              </button>
+            </div>
+          ` : `
+            <button class="btn btn-primary btn-sm" onclick="openStudentLinkParentModal('${s._id}', '${s.fullName.replace(/'/g, "\\'")}')">
+              <i class="fa-solid fa-link"></i> Link Parent Account
+            </button>
+          `}
+        </div>
+
+        ${s.linkedParent ? `
+          <div style="background: rgba(37, 99, 235, 0.05); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 42px; height: 42px; border-radius: 50%; background: var(--primary); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; font-size: 0.95rem;">
+                ${(s.linkedParent.name || 'P').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase()}
+              </div>
+              <div>
+                <div style="font-weight: 700; color: var(--text-main); font-size: 0.95rem;">${s.linkedParent.name}</div>
+                <div style="font-size: 0.82rem; color: var(--text-muted); display: flex; flex-wrap: wrap; gap: 10px; margin-top: 2px;">
+                  <span><i class="fa-solid fa-envelope"></i> ${s.linkedParent.email}</span>
+                  ${s.linkedParent.phone ? `<span><i class="fa-solid fa-phone"></i> ${s.linkedParent.phone}</span>` : ''}
+                </div>
+              </div>
+            </div>
+            <div>
+              <span class="badge badge-success"><i class="fa-solid fa-circle-check"></i> Portal Access Active</span>
+            </div>
+          </div>
+        ` : `
+          <div class="alert alert-info" style="margin: 0; padding: 10px 14px; border-radius: 6px; font-size: 0.88rem; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <i class="fa-solid fa-circle-info" style="margin-right: 6px;"></i>
+              No Parent Portal account is linked to this student. The parent cannot view this student's progress yet.
+            </div>
+          </div>
+        `}
+      </div>
     `;
   } catch (err) {
     content.innerHTML = `<div class="empty-state" style="color: var(--danger);"><i class="fa-solid fa-circle-exclamation"></i> ${err.message}</div>`;
@@ -335,4 +391,104 @@ function deleteStudent(id, name, studentId) {
     }
   });
 }
+
+// Parent linking helpers from Student view
+async function openStudentLinkParentModal(studentId, studentName) {
+  Utils.closeModal('student-view-modal');
+  const title = document.getElementById('student-link-parent-modal-title');
+  if (title) title.innerHTML = `<i class="fa-solid fa-link"></i> Link Parent Account`;
+
+  document.getElementById('link-parent-student-id').value = studentId;
+  document.getElementById('link-parent-student-name-display').innerText = studentName;
+
+  const select = document.getElementById('select-parent-for-student');
+  select.innerHTML = `<option value="">Loading parent accounts...</option>`;
+
+  try {
+    const res = await API.parents.getAll();
+    const parents = res.data || [];
+    if (parents.length === 0) {
+      select.innerHTML = `<option value="">No parents found. Please add a parent first.</option>`;
+    } else {
+      select.innerHTML = `<option value="">-- Choose a Parent Account --</option>` +
+        parents.map(p => `<option value="${p._id}">${p.name} [${p.email}]</option>`).join('');
+    }
+  } catch (err) {
+    select.innerHTML = `<option value="">Failed to load parents</option>`;
+  }
+
+  Utils.openModal('student-link-parent-modal');
+}
+
+async function openStudentChangeParentModal(studentId, studentName, currentParentId) {
+  Utils.closeModal('student-view-modal');
+  const title = document.getElementById('student-link-parent-modal-title');
+  if (title) title.innerHTML = `<i class="fa-solid fa-arrows-rotate"></i> Change Parent Account`;
+
+  document.getElementById('link-parent-student-id').value = studentId;
+  document.getElementById('link-parent-student-name-display').innerText = studentName;
+
+  const select = document.getElementById('select-parent-for-student');
+  select.innerHTML = `<option value="">Loading parent accounts...</option>`;
+
+  try {
+    const res = await API.parents.getAll();
+    const parents = res.data || [];
+    select.innerHTML = `<option value="">-- Choose a Parent Account --</option>` +
+      parents.map(p => `<option value="${p._id}" ${p._id === currentParentId ? 'selected' : ''}>${p.name} [${p.email}]</option>`).join('');
+  } catch (err) {
+    select.innerHTML = `<option value="">Failed to load parents</option>`;
+  }
+
+  Utils.openModal('student-link-parent-modal');
+}
+
+async function handleStudentSaveParentLink(e) {
+  e.preventDefault();
+  const studentId = document.getElementById('link-parent-student-id').value;
+  const parentId = document.getElementById('select-parent-for-student').value;
+
+  if (!studentId || !parentId) {
+    Utils.showToast('Please select a parent account.', 'warning');
+    return;
+  }
+
+  const btn = document.getElementById('btn-save-student-parent-link');
+  const originalHtml = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Linking...`;
+
+  try {
+    await API.students.linkParent(studentId, parentId);
+    Utils.showToast('Parent account linked to student successfully!', 'success');
+    Utils.closeModal('student-link-parent-modal');
+    await loadStudents();
+    viewStudentDetails(studentId);
+  } catch (err) {
+    console.error('Error linking parent to student:', err);
+    Utils.showToast(err.message || 'Failed to link parent account.', 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = originalHtml;
+  }
+}
+
+async function handleStudentUnlinkParent(studentId, studentName) {
+  const confirmed = await Utils.confirmAction(
+    `Are you sure you want to unlink the parent from "${studentName}"? The student will remain enrolled but the parent will no longer see them.`
+  );
+
+  if (!confirmed) return;
+
+  try {
+    await API.students.unlinkParent(studentId);
+    Utils.showToast('Parent unlinked from student successfully!', 'success');
+    viewStudentDetails(studentId);
+    await loadStudents();
+  } catch (err) {
+    console.error('Error unlinking parent from student:', err);
+    Utils.showToast(err.message || 'Failed to unlink parent.', 'error');
+  }
+}
+
 

@@ -87,6 +87,19 @@ const studentSchema = new mongoose.Schema({
   userRef: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
+  },
+  parentId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  },
+  parentName: {
+    type: String,
+    trim: true
+  },
+  parentEmail: {
+    type: String,
+    trim: true,
+    lowercase: true
   }
 }, {
   timestamps: true

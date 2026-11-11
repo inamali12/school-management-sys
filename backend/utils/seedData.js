@@ -682,6 +682,16 @@ const seedDatabase = async () => {
       await User.deleteMany({});
       await User.insertMany(preparedUsers);
 
+      // Link Demo Parent bidirectionally to Student STU-2025-001
+      const parentUser = await User.findOne({ email: 'parent@schoolconnect.edu.pk' });
+      if (parentUser && studentMap['STU-2025-001']) {
+        await Student.findByIdAndUpdate(studentMap['STU-2025-001'], {
+          parentId: parentUser._id,
+          parentName: parentUser.name,
+          parentEmail: parentUser.email
+        });
+      }
+
       // Link Attendance with student ObjectId
       const preparedAttendance = attendanceData.map(a => ({
         ...a,
