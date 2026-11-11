@@ -66,6 +66,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadTeachers() {
   const tbody = document.getElementById('teachers-tbody');
   const countBadge = document.getElementById('teacher-count-badge');
+  const mobileCardsContainer = document.getElementById('teachers-mobile-cards');
 
   const search = document.getElementById('search-input').value.trim();
   const subject = document.getElementById('filter-subject').value;
@@ -96,6 +97,16 @@ async function loadTeachers() {
           </td>
         </tr>
       `;
+      if (mobileCardsContainer) {
+        mobileCardsContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="fa-solid fa-user-slash"></i></div>
+            <h3>No Teachers Found</h3>
+            <p>No faculty records match your current filters.</p>
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('btn-reset-filters').click()">Clear Filters</button>
+          </div>
+        `;
+      }
       return;
     }
 
@@ -147,6 +158,65 @@ async function loadTeachers() {
         </tr>
       `;
     }).join('');
+
+    // Mobile Card Directory (<= 768px)
+    if (mobileCardsContainer) {
+      mobileCardsContainer.innerHTML = allTeachers.map(teacher => {
+        const avatar = teacher.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(teacher.fullName)}&background=1e3a8a&color=fff`;
+
+        return `
+          <div class="mobile-data-card">
+            <div class="m-card-header">
+              <img src="${avatar}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="m-card-avatar" alt="${teacher.fullName}">
+              <div class="m-card-title-box">
+                <div class="m-card-name-row">
+                  <h3 class="m-card-name">${teacher.fullName}</h3>
+                  <span class="badge ${teacher.status === 'Active' ? 'badge-active' : 'badge-inactive'}">${teacher.status}</span>
+                </div>
+                <div class="m-card-id"><i class="fa-solid fa-id-badge"></i> ${teacher.teacherId}</div>
+              </div>
+            </div>
+
+            <div class="m-card-details-grid">
+              <div class="m-card-field">
+                <span class="label">Subject</span>
+                <span class="value" style="color: #166534;">${teacher.subject}</span>
+              </div>
+              <div class="m-card-field">
+                <span class="label">Qualification</span>
+                <span class="value">${teacher.qualification}</span>
+              </div>
+              <div class="m-card-field">
+                <span class="label">Assigned Classes</span>
+                <span class="value">${teacher.assignedClasses && teacher.assignedClasses.length ? teacher.assignedClasses.join(', ') : 'None'}</span>
+              </div>
+              <div class="m-card-field">
+                <span class="label">Phone</span>
+                <span class="value"><a href="tel:${teacher.phoneNumber}"><i class="fa-solid fa-phone"></i> ${teacher.phoneNumber}</a></span>
+              </div>
+              <div class="m-card-field col-span-2">
+                <span class="label">Monthly Salary</span>
+                <span class="value" style="color: var(--success);">${Utils.formatCurrency(teacher.salary)}</span>
+              </div>
+            </div>
+
+            <div class="m-card-actions">
+              <button class="btn btn-outline btn-sm" onclick="viewTeacherDetails('${teacher._id}')">
+                <i class="fa-solid fa-eye" style="color: var(--primary);"></i> Profile
+              </button>
+              ${isAdmin ? `
+                <button class="btn btn-outline btn-sm" onclick="openEditModal('${teacher._id}')">
+                  <i class="fa-solid fa-pen-to-square" style="color: #0284c7;"></i> Edit
+                </button>
+                <button class="btn btn-outline btn-sm" style="color: var(--danger); border-color: var(--danger-border);" onclick="deleteTeacher('${teacher._id}', '${teacher.fullName.replace(/'/g, "\\'")}', '${teacher.teacherId}')">
+                  <i class="fa-solid fa-trash-can"></i> Delete
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
   } catch (err) {
     tbody.innerHTML = `<tr><td colspan="9" class="empty-state" style="color: var(--danger);"><i class="fa-solid fa-circle-exclamation"></i> Error loading teachers: ${err.message}</td></tr>`;
   }

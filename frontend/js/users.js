@@ -28,6 +28,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadUsers() {
   const tbody = document.getElementById('users-tbody');
   const countBadge = document.getElementById('users-count-badge');
+  const mobileCardsContainer = document.getElementById('users-mobile-cards');
 
   tbody.innerHTML = '<tr><td colspan="7"><div class="spinner"></div></td></tr>';
 
@@ -38,6 +39,9 @@ async function loadUsers() {
 
     if (allUsers.length === 0) {
       tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No users registered yet.</td></tr>';
+      if (mobileCardsContainer) {
+        mobileCardsContainer.innerHTML = '<div class="empty-state">No users registered yet.</div>';
+      }
       return;
     }
 
@@ -87,6 +91,71 @@ async function loadUsers() {
         </tr>
       `;
     }).join('');
+
+    // Mobile Card Directory (<= 768px)
+    if (mobileCardsContainer) {
+      mobileCardsContainer.innerHTML = allUsers.map(u => {
+        const initials = u.name ? u.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'U';
+        const roleBadgeClass = u.role === 'admin' ? 'badge-admin' : u.role === 'teacher' ? 'badge-teacher' : 'badge-parent';
+
+        let linkedInfo = 'None';
+        if (u.role === 'parent' && u.studentIds && u.studentIds.length) {
+          linkedInfo = `Child ID: ${u.studentIds.join(', ')}`;
+        } else if (u.role === 'teacher' && u.teacherRef) {
+          linkedInfo = `Faculty Ref: ${u.teacherRef}`;
+        }
+
+        return `
+          <div class="mobile-data-card">
+            <div class="m-card-header">
+              <div class="m-card-avatar" style="background: #1e3a8a;">
+                ${initials}
+              </div>
+              <div class="m-card-title-box">
+                <div class="m-card-name-row">
+                  <h3 class="m-card-name">${u.name}</h3>
+                  <span class="user-role-badge ${roleBadgeClass}">${u.role}</span>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); font-family: monospace;">
+                  @${u.username}
+                </div>
+              </div>
+            </div>
+
+            <div class="m-card-details-grid">
+              <div class="m-card-field">
+                <span class="label">Email</span>
+                <span class="value"><a href="mailto:${u.email}">${u.email}</a></span>
+              </div>
+              <div class="m-card-field">
+                <span class="label">Phone</span>
+                <span class="value">${u.phone || 'N/A'}</span>
+              </div>
+              <div class="m-card-field">
+                <span class="label">Status</span>
+                <span class="value"><span class="badge ${u.status === 'active' ? 'badge-active' : 'badge-inactive'}">${u.status}</span></span>
+              </div>
+              <div class="m-card-field">
+                <span class="label">Linked Profile</span>
+                <span class="value">${linkedInfo}</span>
+              </div>
+            </div>
+
+            <div class="m-card-actions">
+              ${u.username !== 'admin' ? `
+                <button class="btn btn-outline btn-sm" onclick="toggleUserStatus('${u._id}', '${u.status}')">
+                  <i class="fa-solid fa-power-off" style="color: ${u.status === 'active' ? 'var(--warning)' : 'var(--success)'};"></i>
+                  ${u.status === 'active' ? 'Deactivate' : 'Activate'}
+                </button>
+                <button class="btn btn-outline btn-sm" style="color: var(--danger); border-color: var(--danger-border);" onclick="deleteUser('${u._id}', '${u.username}')">
+                  <i class="fa-solid fa-trash-can"></i> Delete
+                </button>
+              ` : '<span style="font-size: 0.8rem; color: var(--text-muted); font-style: italic; padding: 0.5rem;">System Primary Administrator</span>'}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
   } catch (err) {
     tbody.innerHTML = `<tr><td colspan="7" class="empty-state" style="color: var(--danger);">${err.message}</td></tr>`;
   }

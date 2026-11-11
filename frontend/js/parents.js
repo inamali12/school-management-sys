@@ -153,6 +153,7 @@ function populateParentDropdown(selectedParentId = '') {
 async function loadParents() {
   const tbody = document.getElementById('parents-tbody');
   const countBadge = document.getElementById('parent-count-badge');
+  const mobileCardsContainer = document.getElementById('parents-mobile-cards');
   const statTotal = document.getElementById('stat-total-parents');
   const statLinked = document.getElementById('stat-linked-parents');
   const statUnlinked = document.getElementById('stat-unlinked-parents');
@@ -194,6 +195,16 @@ async function loadParents() {
           </td>
         </tr>
       `;
+      if (mobileCardsContainer) {
+        mobileCardsContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="fa-solid fa-users-slash"></i></div>
+            <h3>No Parent Records Found</h3>
+            <p>No parent accounts match your current search and filter criteria.</p>
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('btn-reset-filters').click()">Clear Filters</button>
+          </div>
+        `;
+      }
       return;
     }
 
@@ -289,6 +300,76 @@ async function loadParents() {
         </tr>
       `;
     }).join('');
+
+    // Render Mobile Cards (<= 768px)
+    if (mobileCardsContainer) {
+      mobileCardsContainer.innerHTML = allParents.map(parent => {
+        const initials = (parent.name || 'P').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+        const linkedChildren = parent.linkedChildren || [];
+        const hasChildren = linkedChildren.length > 0;
+
+        return `
+          <div class="mobile-data-card">
+            <div class="m-card-header">
+              <div class="m-card-avatar" style="background: var(--primary);">
+                ${initials}
+              </div>
+              <div class="m-card-title-box">
+                <div class="m-card-name-row">
+                  <h3 class="m-card-name">${parent.name}</h3>
+                  ${hasChildren 
+                    ? `<span class="badge badge-success"><i class="fa-solid fa-link"></i> Linked (${linkedChildren.length})</span>`
+                    : `<span class="badge badge-warning"><i class="fa-solid fa-unlink"></i> Unlinked</span>`
+                  }
+                </div>
+                <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 2px;">
+                  <i class="fa-solid fa-user-tag"></i> ${parent.username || 'Parent'}
+                </div>
+              </div>
+            </div>
+
+            <div class="m-card-details-grid">
+              <div class="m-card-field">
+                <span class="label">Email</span>
+                <span class="value"><a href="mailto:${parent.email}">${parent.email}</a></span>
+              </div>
+              <div class="m-card-field">
+                <span class="label">Phone</span>
+                <span class="value"><a href="tel:${parent.phone || ''}">${parent.phone || 'N/A'}</a></span>
+              </div>
+              <div class="m-card-field col-span-2">
+                <span class="label">Linked Children</span>
+                <div class="value" style="font-weight: normal; white-space: normal;">
+                  ${hasChildren ? linkedChildren.map(c => `
+                    <div style="display: inline-flex; align-items: center; justify-content: space-between; gap: 4px; background: rgba(37, 99, 235, 0.08); border: 1px solid rgba(37, 99, 235, 0.2); padding: 2px 6px; border-radius: 4px; font-size: 0.78rem; margin: 2px 2px 2px 0;">
+                      <span><strong>${c.fullName}</strong> (${c.studentId})</span>
+                      <button type="button" class="btn-icon" style="color: var(--danger); width: 20px; height: 20px; font-size: 0.7rem; padding: 0;" title="Unlink" onclick="unlinkChild('${parent._id}', '${c._id}', '${c.fullName.replace(/'/g, "\\'")}')">
+                        <i class="fa-solid fa-xmark"></i>
+                      </button>
+                    </div>
+                  `).join('') : '<span style="color: var(--text-muted);">No children linked</span>'}
+                </div>
+              </div>
+            </div>
+
+            <div class="m-card-actions">
+              <button class="btn btn-outline btn-sm" onclick="viewParent('${parent._id}')">
+                <i class="fa-solid fa-eye"></i> View Profile
+              </button>
+              <button class="btn btn-outline btn-sm" style="color: #8b5cf6;" onclick="openLinkStudentModal('${parent._id}')">
+                <i class="fa-solid fa-link"></i> Link Child
+              </button>
+              <button class="btn btn-outline btn-sm" onclick="openEditParentModal('${parent._id}')">
+                <i class="fa-solid fa-pen-to-square"></i> Edit
+              </button>
+              <button class="btn btn-outline btn-sm" style="color: var(--danger); border-color: var(--danger-border);" onclick="deleteParent('${parent._id}', '${parent.name.replace(/'/g, "\\'")}')">
+                <i class="fa-solid fa-trash"></i> Delete
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
 
   } catch (err) {
     console.error('Error loading parents:', err);

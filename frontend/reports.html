@@ -17,7 +17,9 @@
       margin-bottom: 1.5rem;
       border-bottom: 1px solid var(--border-color);
       overflow-x: auto;
-      padding-bottom: 0.5rem;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 0.65rem;
+      scrollbar-width: thin;
     }
 
     .report-tab-btn {
@@ -34,6 +36,7 @@
       display: flex;
       align-items: center;
       gap: 0.5rem;
+      flex-shrink: 0;
     }
 
     .report-tab-btn.active {
@@ -44,6 +47,16 @@
     .report-tab-btn:hover:not(.active) {
       background: #f1f5f9;
       color: var(--text-main);
+    }
+
+    @media (max-width: 768px) {
+      .reports-nav {
+        padding-bottom: 0.75rem;
+      }
+      .report-tab-btn {
+        padding: 0.5rem 0.85rem;
+        font-size: 0.82rem;
+      }
     }
   </style>
 </head>

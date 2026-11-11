@@ -75,7 +75,7 @@
 
       <main class="content-body">
         <!-- Classes Grid -->
-        <div class="stats-grid" id="classes-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
+        <div class="stats-grid" id="classes-stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
           <!-- Populated by classes.js -->
           <div class="spinner"></div>
         </div>
@@ -89,7 +89,7 @@
             </div>
             <button class="btn btn-outline btn-sm" onclick="document.getElementById('class-detail-card').style.display='none'">Close Table</button>
           </div>
-          <div class="table-responsive">
+          <div class="table-responsive desktop-only-table">
             <table class="data-table">
               <thead>
                 <tr>
@@ -103,6 +103,11 @@
               </thead>
               <tbody id="class-students-tbody"></tbody>
             </table>
+          </div>
+
+          <!-- Mobile-Friendly Class Students Cards (<= 768px) -->
+          <div class="mobile-only-cards" id="class-students-mobile-cards" style="padding: 0 1rem 1rem 1rem;">
+            <div class="spinner"></div>
           </div>
         </div>
       </main>

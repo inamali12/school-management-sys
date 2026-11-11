@@ -321,12 +321,12 @@ function renderAdminDashboard(data) {
       <div class="card-body" style="padding: 1rem 1.5rem;">
         <div style="display: flex; flex-direction: column; gap: 0.75rem;">
           ${data.recentActivities.map(act => `
-            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: #f8fafc; border-radius: var(--radius-md); border-left: 4px solid ${act.type === 'admission' ? '#3b82f6' : act.type === 'fee' ? '#10b981' : act.type === 'attendance' ? '#f59e0b' : '#6366f1'};">
-              <div>
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: #f8fafc; border-radius: var(--radius-md); border-left: 4px solid ${act.type === 'admission' ? '#3b82f6' : act.type === 'fee' ? '#10b981' : act.type === 'attendance' ? '#f59e0b' : '#6366f1'}; flex-wrap: wrap; gap: 0.5rem;">
+              <div style="min-width: 180px; flex: 1 1 auto;">
                 <strong style="color: var(--text-main); font-size: 0.9rem;">${act.title}</strong>
                 <p style="color: var(--text-muted); font-size: 0.82rem; margin: 0.2rem 0 0;">${act.description}</p>
               </div>
-              <div style="text-align: right; font-size: 0.78rem; color: var(--text-light); white-space: nowrap; margin-left: 1rem;">
+              <div style="text-align: right; font-size: 0.78rem; color: var(--text-light); white-space: nowrap; margin-left: auto;">
                 <span class="badge" style="background: #e2e8f0; color: #334155; margin-bottom: 0.25rem;">${act.performedBy || 'System'}</span><br>
                 ${Utils.formatDate(act.createdAt)}
               </div>

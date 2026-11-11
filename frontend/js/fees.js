@@ -113,6 +113,7 @@ async function loadStudentsDropdown() {
 async function loadFees() {
   const tbody = document.getElementById('fees-tbody');
   const countBadge = document.getElementById('fee-count-badge');
+  const mobileCardsContainer = document.getElementById('fees-mobile-cards');
 
   const search = document.getElementById('search-fees').value.trim();
   const month = document.getElementById('filter-fee-month').value;
@@ -134,6 +135,9 @@ async function loadFees() {
 
     if (allFees.length === 0) {
       tbody.innerHTML = '<tr><td colspan="10" class="empty-state">No fee vouchers match your filters.</td></tr>';
+      if (mobileCardsContainer) {
+        mobileCardsContainer.innerHTML = '<div class="empty-state">No fee vouchers match your filters.</div>';
+      }
       return;
     }
 
@@ -177,6 +181,73 @@ async function loadFees() {
         </td>
       </tr>
     `).join('');
+
+    // Mobile Card Directory (<= 768px)
+    if (mobileCardsContainer) {
+      mobileCardsContainer.innerHTML = allFees.map(fee => `
+        <div class="mobile-data-card">
+          <div class="m-card-header">
+            <div class="m-card-avatar" style="background: ${fee.remainingBalance > 0 ? '#ef4444' : '#10b981'}; font-size: 1.1rem;">
+              <i class="fa-solid fa-receipt"></i>
+            </div>
+            <div class="m-card-title-box">
+              <div class="m-card-name-row">
+                <h3 class="m-card-name">${fee.studentName}</h3>
+                <span class="badge ${fee.paymentStatus === 'Paid' ? 'badge-paid' : fee.paymentStatus === 'Partial' ? 'badge-partial' : fee.paymentStatus === 'Overdue' ? 'badge-overdue' : 'badge-pending'}">
+                  ${fee.paymentStatus}
+                </span>
+              </div>
+              <div class="m-card-id">${fee.feeId} &bull; ${fee.studentId}</div>
+            </div>
+          </div>
+
+          <div class="m-card-details-grid">
+            <div class="m-card-field">
+              <span class="label">Billing Month</span>
+              <span class="value">${fee.month}</span>
+            </div>
+            <div class="m-card-field">
+              <span class="label">Class</span>
+              <span class="value" style="color: var(--secondary);">${fee.className}-${fee.section}</span>
+            </div>
+            <div class="m-card-field">
+              <span class="label">Total Fee</span>
+              <span class="value">${Utils.formatCurrency(fee.totalFee)}</span>
+            </div>
+            <div class="m-card-field">
+              <span class="label">Paid Amount</span>
+              <span class="value" style="color: var(--success);">${Utils.formatCurrency(fee.paidAmount)}</span>
+            </div>
+            <div class="m-card-field">
+              <span class="label">Remaining Dues</span>
+              <span class="value" style="color: ${fee.remainingBalance > 0 ? 'var(--danger)' : 'var(--success)'};">
+                ${Utils.formatCurrency(fee.remainingBalance)}
+              </span>
+            </div>
+            <div class="m-card-field">
+              <span class="label">Due Date</span>
+              <span class="value">${Utils.formatDate(fee.dueDate)}</span>
+            </div>
+          </div>
+
+          <div class="m-card-actions">
+            ${isAdmin && fee.remainingBalance > 0 ? `
+              <button class="btn btn-success btn-sm" onclick="openPaymentModal('${fee._id}')">
+                <i class="fa-solid fa-hand-holding-dollar"></i> Pay
+              </button>
+            ` : ''}
+            <button class="btn btn-outline btn-sm" onclick="viewPrintVoucher('${fee._id}')">
+              <i class="fa-solid fa-print"></i> Print
+            </button>
+            ${isAdmin ? `
+              <button class="btn btn-outline btn-sm" style="color: var(--danger); border-color: var(--danger-border);" onclick="deleteFeeVoucher('${fee._id}', '${fee.feeId}', '${fee.studentName}')">
+                <i class="fa-solid fa-trash-can"></i> Delete
+              </button>
+            ` : ''}
+          </div>
+        </div>
+      `).join('');
+    }
   } catch (err) {
     tbody.innerHTML = `<tr><td colspan="10" class="empty-state" style="color: var(--danger);">${err.message}</td></tr>`;
   }

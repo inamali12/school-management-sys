@@ -90,11 +90,13 @@ async function loadClassStudentsForMarking() {
   const section = document.getElementById('mark-section-select').value;
   const date = document.getElementById('mark-date-input').value;
   const tbody = document.getElementById('attendance-mark-tbody');
+  const cardsContainer = document.getElementById('attendance-mark-mobile-cards');
 
   document.getElementById('mark-sheet-title').innerText = `Attendance Sheet \u2022 ${className} (${section !== 'all' ? 'Section ' + section : 'All Sections'})`;
   document.getElementById('mark-sheet-date').innerText = `Date: ${Utils.formatDate(date)}`;
 
-  tbody.innerHTML = '<tr><td colspan="5"><div class="spinner"></div></td></tr>';
+  if (tbody) tbody.innerHTML = '<tr><td colspan="5"><div class="spinner"></div></td></tr>';
+  if (cardsContainer) cardsContainer.innerHTML = '<div class="spinner"></div>';
 
   try {
     // 1. Fetch Students
@@ -104,7 +106,9 @@ async function loadClassStudentsForMarking() {
     currentStudentsForMarking = stuRes.data || [];
 
     if (currentStudentsForMarking.length === 0) {
-      tbody.innerHTML = `<tr><td colspan="5" class="empty-state">No active students found in ${className} ${section !== 'all' ? section : ''}</td></tr>`;
+      const emptyMsg = `No active students found in ${className} ${section !== 'all' ? section : ''}`;
+      if (tbody) tbody.innerHTML = `<tr><td colspan="5" class="empty-state">${emptyMsg}</td></tr>`;
+      if (cardsContainer) cardsContainer.innerHTML = `<div class="empty-state">${emptyMsg}</div>`;
       updateLiveSummary();
       return;
     }
@@ -130,46 +134,92 @@ async function loadClassStudentsForMarking() {
     renderMarkingTable();
     updateLiveSummary();
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="5" class="empty-state" style="color: var(--danger);">${err.message}</td></tr>`;
+    if (tbody) tbody.innerHTML = `<tr><td colspan="5" class="empty-state" style="color: var(--danger);">${err.message}</td></tr>`;
+    if (cardsContainer) cardsContainer.innerHTML = `<div class="empty-state" style="color: var(--danger);">${err.message}</div>`;
   }
 }
 
 function renderMarkingTable() {
   const tbody = document.getElementById('attendance-mark-tbody');
+  const cardsContainer = document.getElementById('attendance-mark-mobile-cards');
 
-  tbody.innerHTML = currentStudentsForMarking.map(student => {
-    const current = studentAttendanceMap[student.studentId] || { status: 'Present', remarks: '' };
+  if (tbody) {
+    tbody.innerHTML = currentStudentsForMarking.map(student => {
+      const current = studentAttendanceMap[student.studentId] || { status: 'Present', remarks: '' };
 
-    return `
-      <tr id="row-${student.studentId}">
-        <td><strong>${student.rollNumber || '-'}</strong></td>
-        <td><strong style="color: var(--primary); font-family: monospace;">${student.studentId}</strong></td>
-        <td>
-          <strong>${student.fullName}</strong>
-          <small style="color: var(--text-muted); display: block;">Father: ${student.fatherName}</small>
-        </td>
-        <td>
-          <div class="attendance-status-group">
-            <button type="button" class="att-btn ${current.status === 'Present' ? 'active present' : ''}" onclick="setStatus('${student.studentId}', 'Present')">
-              <i class="fa-solid fa-check"></i> Present
-            </button>
-            <button type="button" class="att-btn ${current.status === 'Absent' ? 'active absent' : ''}" onclick="setStatus('${student.studentId}', 'Absent')">
-              <i class="fa-solid fa-xmark"></i> Absent
-            </button>
-            <button type="button" class="att-btn ${current.status === 'Late' ? 'active late' : ''}" onclick="setStatus('${student.studentId}', 'Late')">
-              <i class="fa-solid fa-clock"></i> Late
-            </button>
-            <button type="button" class="att-btn ${current.status === 'Leave' ? 'active leave' : ''}" onclick="setStatus('${student.studentId}', 'Leave')">
-              <i class="fa-solid fa-file-lines"></i> Leave
-            </button>
+      return `
+        <tr id="row-${student.studentId}">
+          <td><strong>${student.rollNumber || '-'}</strong></td>
+          <td><strong style="color: var(--primary); font-family: monospace;">${student.studentId}</strong></td>
+          <td>
+            <strong>${student.fullName}</strong>
+            <small style="color: var(--text-muted); display: block;">Father: ${student.fatherName}</small>
+          </td>
+          <td>
+            <div class="attendance-status-group">
+              <button type="button" class="att-btn ${current.status === 'Present' ? 'active present' : ''}" onclick="setStatus('${student.studentId}', 'Present')">
+                <i class="fa-solid fa-check"></i> Present
+              </button>
+              <button type="button" class="att-btn ${current.status === 'Absent' ? 'active absent' : ''}" onclick="setStatus('${student.studentId}', 'Absent')">
+                <i class="fa-solid fa-xmark"></i> Absent
+              </button>
+              <button type="button" class="att-btn ${current.status === 'Late' ? 'active late' : ''}" onclick="setStatus('${student.studentId}', 'Late')">
+                <i class="fa-solid fa-clock"></i> Late
+              </button>
+              <button type="button" class="att-btn ${current.status === 'Leave' ? 'active leave' : ''}" onclick="setStatus('${student.studentId}', 'Leave')">
+                <i class="fa-solid fa-file-lines"></i> Leave
+              </button>
+            </div>
+          </td>
+          <td>
+            <input type="text" class="form-control" style="padding: 0.35rem 0.65rem; font-size: 0.82rem;" placeholder="Optional remarks..." value="${Utils.escapeHtml(current.remarks)}" onchange="setRemarks('${student.studentId}', this.value)">
+          </td>
+        </tr>
+      `;
+    }).join('');
+  }
+
+  if (cardsContainer) {
+    cardsContainer.innerHTML = currentStudentsForMarking.map(student => {
+      const current = studentAttendanceMap[student.studentId] || { status: 'Present', remarks: '' };
+
+      return `
+        <div class="mobile-data-card" id="att-card-${student.studentId}">
+          <div class="m-card-header">
+            <div class="m-card-avatar">${student.fullName.charAt(0).toUpperCase()}</div>
+            <div class="m-card-title-box">
+              <div class="m-card-name-row">
+                <h3 class="m-card-title">${student.fullName}</h3>
+                <span class="badge" style="background:#e0f2fe; color:#0369a1; font-weight:700;">Roll #${student.rollNumber || '-'}</span>
+              </div>
+              <div class="m-card-subtitle" style="font-family: monospace;">${student.studentId} &bull; Father: ${student.fatherName || '-'}</div>
+            </div>
           </div>
-        </td>
-        <td>
-          <input type="text" class="form-control" style="padding: 0.35rem 0.65rem; font-size: 0.82rem;" placeholder="Optional remarks..." value="${current.remarks}" onchange="setRemarks('${student.studentId}', this.value)">
-        </td>
-      </tr>
-    `;
-  }).join('');
+
+          <div style="margin-top: 0.75rem;">
+            <div class="attendance-status-group" style="width: 100%;">
+              <button type="button" class="att-btn ${current.status === 'Present' ? 'active present' : ''}" onclick="setStatus('${student.studentId}', 'Present')">
+                <i class="fa-solid fa-check"></i> Present
+              </button>
+              <button type="button" class="att-btn ${current.status === 'Absent' ? 'active absent' : ''}" onclick="setStatus('${student.studentId}', 'Absent')">
+                <i class="fa-solid fa-xmark"></i> Absent
+              </button>
+              <button type="button" class="att-btn ${current.status === 'Late' ? 'active late' : ''}" onclick="setStatus('${student.studentId}', 'Late')">
+                <i class="fa-solid fa-clock"></i> Late
+              </button>
+              <button type="button" class="att-btn ${current.status === 'Leave' ? 'active leave' : ''}" onclick="setStatus('${student.studentId}', 'Leave')">
+                <i class="fa-solid fa-file-lines"></i> Leave
+              </button>
+            </div>
+          </div>
+
+          <div style="margin-top: 0.65rem;">
+            <input type="text" class="form-control" style="font-size: 0.82rem; padding: 0.4rem 0.65rem;" placeholder="Optional remarks..." value="${Utils.escapeHtml(current.remarks)}" onchange="setRemarks('${student.studentId}', this.value)">
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
 }
 
 function setStatus(studentId, status) {
@@ -183,6 +233,18 @@ function setStatus(studentId, status) {
   const row = document.getElementById(`row-${studentId}`);
   if (row) {
     const btns = row.querySelectorAll('.att-btn');
+    btns.forEach(b => {
+      b.className = 'att-btn';
+      if (b.innerText.trim().toLowerCase().includes(status.toLowerCase())) {
+        b.className = `att-btn active ${status.toLowerCase()}`;
+      }
+    });
+  }
+
+  // Update UI card buttons (mobile)
+  const card = document.getElementById(`att-card-${studentId}`);
+  if (card) {
+    const btns = card.querySelectorAll('.att-btn');
     btns.forEach(b => {
       b.className = 'att-btn';
       if (b.innerText.trim().toLowerCase().includes(status.toLowerCase())) {
@@ -264,6 +326,7 @@ async function saveBatchAttendance() {
 // ----------------------------------------------------
 async function loadAttendanceHistory() {
   const tbody = document.getElementById('attendance-history-tbody');
+  const cardsContainer = document.getElementById('attendance-history-mobile-cards');
   const countBadge = document.getElementById('history-count-badge');
 
   const search = document.getElementById('hist-search-student').value.trim();
@@ -271,7 +334,8 @@ async function loadAttendanceHistory() {
   const className = document.getElementById('hist-class-filter').value;
   const status = document.getElementById('hist-status-filter').value;
 
-  tbody.innerHTML = '<tr><td colspan="8"><div class="spinner"></div></td></tr>';
+  if (tbody) tbody.innerHTML = '<tr><td colspan="8"><div class="spinner"></div></td></tr>';
+  if (cardsContainer) cardsContainer.innerHTML = '<div class="spinner"></div>';
 
   try {
     const response = await API.attendance.getAll({
@@ -306,37 +370,90 @@ async function loadAttendanceHistory() {
     document.getElementById('hist-leave').innerText = lv;
 
     if (records.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="8" class="empty-state">No attendance records found for current filters.</td></tr>';
+      const emptyMsg = 'No attendance records found for current filters.';
+      if (tbody) tbody.innerHTML = `<tr><td colspan="8" class="empty-state">${emptyMsg}</td></tr>`;
+      if (cardsContainer) cardsContainer.innerHTML = `<div class="empty-state">${emptyMsg}</div>`;
       return;
     }
 
     const currentUser = API.getUser();
     const isAdmin = currentUser && currentUser.role === 'admin';
 
-    tbody.innerHTML = records.map(r => `
-      <tr>
-        <td><strong>${Utils.formatDate(r.date)}</strong></td>
-        <td><strong style="color: var(--primary); font-family: monospace;">${r.studentId}</strong></td>
-        <td><strong>${r.studentName}</strong></td>
-        <td><span class="badge" style="background: #e0f2fe; color: #0284c7;">${r.className}-${r.section}</span></td>
-        <td>
-          <span class="badge ${r.status === 'Present' ? 'badge-present' : r.status === 'Absent' ? 'badge-absent' : r.status === 'Late' ? 'badge-late' : 'badge-leave'}">
-            ${r.status}
-          </span>
-        </td>
-        <td><small style="color: var(--text-muted);">${r.remarks || '-'}</small></td>
-        <td><small>${r.markedBy || 'Admin'}</small></td>
-        <td style="text-align: right;">
+    // Desktop table
+    if (tbody) {
+      tbody.innerHTML = records.map(r => `
+        <tr>
+          <td><strong>${Utils.formatDate(r.date)}</strong></td>
+          <td><strong style="color: var(--primary); font-family: monospace;">${r.studentId}</strong></td>
+          <td><strong>${r.studentName}</strong></td>
+          <td><span class="badge" style="background: #e0f2fe; color: #0284c7;">${r.className}-${r.section}</span></td>
+          <td>
+            <span class="badge ${r.status === 'Present' ? 'badge-present' : r.status === 'Absent' ? 'badge-absent' : r.status === 'Late' ? 'badge-late' : 'badge-leave'}">
+              ${r.status}
+            </span>
+          </td>
+          <td><small style="color: var(--text-muted);">${r.remarks || '-'}</small></td>
+          <td><small>${r.markedBy || 'Admin'}</small></td>
+          <td style="text-align: right;">
+            ${isAdmin ? `
+              <button class="btn btn-outline btn-icon btn-sm" title="Delete Entry" onclick="deleteAttendanceRecord('${r._id}', '${r.studentName}', '${r.date}')">
+                <i class="fa-solid fa-trash-can" style="color: var(--danger);"></i>
+              </button>
+            ` : '-'}
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // Mobile cards
+    if (cardsContainer) {
+      cardsContainer.innerHTML = records.map(r => `
+        <div class="mobile-data-card">
+          <div class="m-card-header">
+            <div class="m-card-avatar" style="background:#e0f2fe; color:#0369a1;">
+              ${(r.studentName || 'S').charAt(0).toUpperCase()}
+            </div>
+            <div class="m-card-title-box">
+              <div class="m-card-name-row">
+                <h3 class="m-card-title">${r.studentName}</h3>
+                <span class="badge ${r.status === 'Present' ? 'badge-present' : r.status === 'Absent' ? 'badge-absent' : r.status === 'Late' ? 'badge-late' : 'badge-leave'}">
+                  ${r.status}
+                </span>
+              </div>
+              <div class="m-card-subtitle" style="font-family: monospace;">${r.studentId} &bull; ${r.className}-${r.section}</div>
+            </div>
+          </div>
+
+          <div class="m-card-details-grid">
+            <div class="m-card-field">
+              <div class="m-card-field-label">Date</div>
+              <div class="m-card-field-val">${Utils.formatDate(r.date)}</div>
+            </div>
+            <div class="m-card-field">
+              <div class="m-card-field-label">Marked By</div>
+              <div class="m-card-field-val">${r.markedBy || 'Admin'}</div>
+            </div>
+            ${r.remarks ? `
+              <div class="m-card-field full-width">
+                <div class="m-card-field-label">Remarks</div>
+                <div class="m-card-field-val">${Utils.escapeHtml(r.remarks)}</div>
+              </div>
+            ` : ''}
+          </div>
+
           ${isAdmin ? `
-            <button class="btn btn-outline btn-icon btn-sm" title="Delete Entry" onclick="deleteAttendanceRecord('${r._id}', '${r.studentName}', '${r.date}')">
-              <i class="fa-solid fa-trash-can" style="color: var(--danger);"></i>
-            </button>
-          ` : '-'}
-        </td>
-      </tr>
-    `).join('');
+            <div class="m-card-actions">
+              <button class="btn btn-outline btn-sm" style="color: var(--danger); border-color: var(--danger);" onclick="deleteAttendanceRecord('${r._id}', '${r.studentName}', '${r.date}')">
+                <i class="fa-solid fa-trash-can"></i> Delete Entry
+              </button>
+            </div>
+          ` : ''}
+        </div>
+      `).join('');
+    }
   } catch (err) {
-    tbody.innerHTML = `<tr><td colspan="8" class="empty-state" style="color: var(--danger);">${err.message}</td></tr>`;
+    if (tbody) tbody.innerHTML = `<tr><td colspan="8" class="empty-state" style="color: var(--danger);">${err.message}</td></tr>`;
+    if (cardsContainer) cardsContainer.innerHTML = `<div class="empty-state" style="color: var(--danger);">${err.message}</div>`;
   }
 }
 

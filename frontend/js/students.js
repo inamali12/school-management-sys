@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 async function loadStudents() {
   const tbody = document.getElementById('students-tbody');
   const countBadge = document.getElementById('student-count-badge');
+  const mobileCardsContainer = document.getElementById('students-mobile-cards');
 
   const search = document.getElementById('search-input').value.trim();
   const className = document.getElementById('filter-class').value;
@@ -106,12 +107,23 @@ async function loadStudents() {
           </td>
         </tr>
       `;
+      if (mobileCardsContainer) {
+        mobileCardsContainer.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon"><i class="fa-solid fa-user-slash"></i></div>
+            <h3>No Students Found</h3>
+            <p>No student records match your current search and filter criteria.</p>
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('btn-reset-filters').click()">Clear Filters</button>
+          </div>
+        `;
+      }
       return;
     }
 
     const currentUser = API.getUser();
     const isAdmin = currentUser && currentUser.role === 'admin';
 
+    // Desktop Table Rendering
     tbody.innerHTML = allStudents.map(student => {
       const avatar = student.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(student.fullName)}&background=0ea5e9&color=fff`;
 
@@ -149,7 +161,7 @@ async function loadStudents() {
               <button class="btn btn-outline btn-icon" title="Edit Student" onclick="openEditModal('${student._id}')">
                 <i class="fa-solid fa-pen-to-square" style="color: #0284c7;"></i>
               </button>
-              <button class="btn btn-outline btn-icon" title="Delete Student" onclick="deleteStudent('${student._id}', '${student.fullName}', '${student.studentId}')">
+              <button class="btn btn-outline btn-icon" title="Delete Student" onclick="deleteStudent('${student._id}', '${student.fullName.replace(/'/g, "\\'")}', '${student.studentId}')">
                 <i class="fa-solid fa-trash-can" style="color: var(--danger);"></i>
               </button>
             ` : ''}
@@ -157,6 +169,61 @@ async function loadStudents() {
         </tr>
       `;
     }).join('');
+
+    // Mobile Card Directory Rendering (<= 768px)
+    if (mobileCardsContainer) {
+      mobileCardsContainer.innerHTML = allStudents.map(student => {
+        const avatar = student.photoUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(student.fullName)}&background=0ea5e9&color=fff`;
+
+        return `
+          <div class="mobile-data-card">
+            <div class="m-card-header">
+              <img src="${avatar}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="m-card-avatar" alt="${student.fullName}">
+              <div class="m-card-title-box">
+                <div class="m-card-name-row">
+                  <h3 class="m-card-name">${student.fullName}</h3>
+                  <span class="badge ${student.status === 'Active' ? 'badge-active' : 'badge-inactive'}">${student.status}</span>
+                </div>
+                <div class="m-card-id"><i class="fa-solid fa-id-badge"></i> ${student.studentId}</div>
+              </div>
+            </div>
+
+            <div class="m-card-details-grid">
+              <div class="m-card-field">
+                <span class="label">Father's Name</span>
+                <span class="value">${student.fatherName}</span>
+              </div>
+              <div class="m-card-field">
+                <span class="label">Class & Sec</span>
+                <span class="value" style="color: var(--secondary);">${student.className}-${student.section}</span>
+              </div>
+              <div class="m-card-field">
+                <span class="label">Roll Number</span>
+                <span class="value">${student.rollNumber || 'N/A'}</span>
+              </div>
+              <div class="m-card-field">
+                <span class="label">Contact</span>
+                <span class="value"><a href="tel:${student.contactNumber}"><i class="fa-solid fa-phone"></i> ${student.contactNumber}</a></span>
+              </div>
+            </div>
+
+            <div class="m-card-actions">
+              <button class="btn btn-outline btn-sm" onclick="viewStudentDetails('${student._id}')">
+                <i class="fa-solid fa-eye" style="color: var(--primary);"></i> View
+              </button>
+              ${isAdmin ? `
+                <button class="btn btn-outline btn-sm" onclick="openEditModal('${student._id}')">
+                  <i class="fa-solid fa-pen-to-square" style="color: #0284c7;"></i> Edit
+                </button>
+                <button class="btn btn-outline btn-sm" style="color: var(--danger); border-color: var(--danger-border);" onclick="deleteStudent('${student._id}', '${student.fullName.replace(/'/g, "\\'")}', '${student.studentId}')">
+                  <i class="fa-solid fa-trash-can"></i> Delete
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
   } catch (err) {
     tbody.innerHTML = `<tr><td colspan="8" class="empty-state" style="color: var(--danger);"><i class="fa-solid fa-circle-exclamation"></i> Error loading students: ${err.message}</td></tr>`;
   }

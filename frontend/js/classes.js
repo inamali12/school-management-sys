@@ -170,11 +170,13 @@ async function handleSaveClass(e) {
 async function viewClassStudents(id) {
   const detailCard = document.getElementById('class-detail-card');
   const tbody = document.getElementById('class-students-tbody');
+  const mobileCards = document.getElementById('class-students-mobile-cards');
   const title = document.getElementById('class-detail-title');
   const sub = document.getElementById('class-detail-sub');
 
   detailCard.style.display = 'block';
   tbody.innerHTML = '<tr><td colspan="6"><div class="spinner"></div></td></tr>';
+  if (mobileCards) mobileCards.innerHTML = '<div class="spinner"></div>';
   detailCard.scrollIntoView({ behavior: 'smooth' });
 
   try {
@@ -185,6 +187,7 @@ async function viewClassStudents(id) {
 
     if (!c.students || c.students.length === 0) {
       tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No students currently enrolled in this class.</td></tr>';
+      if (mobileCards) mobileCards.innerHTML = '<div class="empty-state">No students currently enrolled in this class.</div>';
       return;
     }
 
@@ -198,8 +201,38 @@ async function viewClassStudents(id) {
         <td><span class="badge ${s.status === 'Active' ? 'badge-active' : 'badge-inactive'}">${s.status}</span></td>
       </tr>
     `).join('');
+
+    if (mobileCards) {
+      mobileCards.innerHTML = c.students.map(s => `
+        <div class="mobile-data-card">
+          <div class="m-card-header">
+            <div class="m-card-avatar" style="background: var(--primary);">
+              <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <div class="m-card-title-box">
+              <div class="m-card-name-row">
+                <h3 class="m-card-name">${s.fullName}</h3>
+                <span class="badge ${s.status === 'Active' ? 'badge-active' : 'badge-inactive'}">${s.status}</span>
+              </div>
+              <div class="m-card-id">${s.studentId} &bull; Section ${s.section}</div>
+            </div>
+          </div>
+          <div class="m-card-details-grid">
+            <div class="m-card-field">
+              <span class="label">Roll Number</span>
+              <span class="value">${s.rollNumber || 'N/A'}</span>
+            </div>
+            <div class="m-card-field">
+              <span class="label">Parent Contact</span>
+              <span class="value"><a href="tel:${s.parentContact}"><i class="fa-solid fa-phone"></i> ${s.parentContact}</a></span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
   } catch (err) {
     tbody.innerHTML = `<tr><td colspan="6" class="empty-state" style="color: var(--danger);">${err.message}</td></tr>`;
+    if (mobileCards) mobileCards.innerHTML = `<div class="empty-state" style="color: var(--danger);">${err.message}</div>`;
   }
 }
 

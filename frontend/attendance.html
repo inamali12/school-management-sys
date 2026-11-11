@@ -65,6 +65,55 @@
       background: var(--primary);
       color: white;
     }
+
+    .mark-toolbar-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      width: 100%;
+    }
+
+    .mark-controls-row {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .mark-controls-row .form-field {
+      flex: 1 1 160px;
+    }
+
+    .mark-actions-row {
+      display: flex;
+      gap: 0.6rem;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+
+    @media (max-width: 640px) {
+      .mark-controls-row .form-field {
+        flex: 1 1 100%;
+      }
+      .mark-actions-row {
+        width: 100%;
+      }
+      .mark-actions-row .btn {
+        flex: 1 1 140px;
+        justify-content: center;
+      }
+      .attendance-status-group {
+        display: flex;
+        flex-wrap: wrap;
+        width: 100%;
+      }
+      .att-btn {
+        flex: 1 1 45%;
+        padding: 0.45rem 0.25rem;
+        font-size: 0.75rem;
+        text-align: center;
+      }
+    }
   </style>
 </head>
 <body>
@@ -148,9 +197,9 @@
              ============================================== -->
         <div id="tab-mark-section">
           <div class="toolbar-container">
-            <div class="filters-group" style="width: 100%; justify-content: space-between;">
-              <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-                <div>
+            <div class="mark-toolbar-wrap">
+              <div class="mark-controls-row">
+                <div class="form-field">
                   <label class="form-label" for="mark-class-select">Select Class</label>
                   <select id="mark-class-select" class="filter-select">
                     <option value="Class 6">Class 6</option>
@@ -161,7 +210,7 @@
                   </select>
                 </div>
 
-                <div>
+                <div class="form-field">
                   <label class="form-label" for="mark-section-select">Section</label>
                   <select id="mark-section-select" class="filter-select">
                     <option value="all">All Sections</option>
@@ -170,19 +219,19 @@
                   </select>
                 </div>
 
-                <div>
+                <div class="form-field">
                   <label class="form-label" for="mark-date-input">Attendance Date</label>
                   <input type="date" id="mark-date-input" class="form-control" style="padding: 0.55rem 0.85rem;">
                 </div>
 
-                <div style="margin-top: 1.4rem;">
-                  <button id="btn-load-class-students" class="btn btn-primary btn-sm">
+                <div>
+                  <button id="btn-load-class-students" class="btn btn-primary" style="height: 38px;">
                     <i class="fa-solid fa-users"></i> Load Students
                   </button>
                 </div>
               </div>
 
-              <div style="margin-top: 1.4rem; display: flex; gap: 0.5rem;">
+              <div class="mark-actions-row">
                 <button id="btn-mark-all-present" class="btn btn-success btn-sm">
                   <i class="fa-solid fa-check-double"></i> Mark All Present
                 </button>
@@ -207,7 +256,8 @@
               </div>
             </div>
 
-            <div class="table-responsive">
+            <!-- Desktop View: Table -->
+            <div class="table-responsive desktop-only-table">
               <table class="data-table">
                 <thead>
                   <tr>
@@ -222,6 +272,11 @@
                   <tr><td colspan="5" class="empty-state">Select class and click "Load Students"</td></tr>
                 </tbody>
               </table>
+            </div>
+
+            <!-- Mobile View: Interactive Attendance Cards -->
+            <div id="attendance-mark-mobile-cards" class="mobile-only-cards" style="padding: 1rem;">
+              <div class="empty-state">Select class and click "Load Students"</div>
             </div>
 
             <div class="card-header" style="justify-content: flex-end; background: #fafafa; border-top: 1px solid var(--border-color); border-bottom: none;">
@@ -310,7 +365,8 @@
               </div>
             </div>
 
-            <div class="table-responsive">
+            <!-- Desktop View: Data Table -->
+            <div class="table-responsive desktop-only-table">
               <table class="data-table">
                 <thead>
                   <tr>
@@ -328,6 +384,11 @@
                   <tr><td colspan="8"><div class="spinner"></div></td></tr>
                 </tbody>
               </table>
+            </div>
+
+            <!-- Mobile View: History Cards -->
+            <div id="attendance-history-mobile-cards" class="mobile-only-cards" style="padding: 1rem;">
+              <div class="spinner"></div>
             </div>
           </div>
         </div>
