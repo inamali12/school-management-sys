@@ -181,7 +181,7 @@ async function viewClassStudents(id) {
     const res = await API.classes.getById(id);
     const c = res.data;
     title.innerText = `${c.name} - Enrolled Students (${c.studentCount})`;
-    sub.innerText = `Class Teacher: ${c.classTeacherName} &bull; Room: ${c.roomNumber}`;
+    sub.innerText = `Class Teacher: ${c.classTeacherName} • Room: ${c.roomNumber}`;
 
     if (!c.students || c.students.length === 0) {
       tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No students currently enrolled in this class.</td></tr>';

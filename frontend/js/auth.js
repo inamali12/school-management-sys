@@ -42,10 +42,10 @@ const Auth = (() => {
       sidebarUserRole.className = `user-role-badge badge-${user.role}`;
     }
     if (sidebarUserAvatar) {
+      const initials = (user.name || 'User').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
       if (user.avatar) {
-        sidebarUserAvatar.innerHTML = `<img src="${user.avatar}" class="table-avatar" alt="${user.name}">`;
+        sidebarUserAvatar.innerHTML = `<img src="${user.avatar}" class="table-avatar" alt="${user.name}" onerror="this.outerHTML='<span class=\\'avatar-initials\\'>${initials}</span>'">`;
       } else {
-        const initials = user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
         sidebarUserAvatar.innerText = initials;
       }
     }

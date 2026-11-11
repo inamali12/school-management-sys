@@ -87,7 +87,7 @@ function renderAdminDashboard(data) {
     </div>
 
     <!-- Secondary Financial & Attendance Summary Cards -->
-    <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); margin-bottom: 2rem;">
+    <div class="stats-grid">
       <div class="stat-card success">
         <div class="stat-content">
           <h3>Fees Collected</h3>
@@ -155,7 +155,7 @@ function renderAdminDashboard(data) {
     </div>
 
     <!-- Analytics Visual Breakdown & Class Enrollment Grid -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="dashboard-grid-2">
       <!-- Attendance Today Breakdown -->
       <div class="card" style="margin-bottom: 0;">
         <div class="card-header">
@@ -176,7 +176,7 @@ function renderAdminDashboard(data) {
             </div>
           </div>
 
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem;">
+          <div class="dashboard-grid-2" style="margin-bottom: 0; gap: 1rem;">
             <div style="padding: 0.85rem; background: var(--success-bg); border-radius: var(--radius-md); border-left: 3px solid var(--success);">
               <small style="color: #065f46; font-weight: 600;">Present Students</small>
               <h4 style="font-size: 1.4rem; color: #047857; margin-top: 0.2rem;">${stats.todayAttendance.present}</h4>
@@ -228,7 +228,7 @@ function renderAdminDashboard(data) {
     </div>
 
     <!-- Data Tables Grid: Recent Admissions & Recent Payments -->
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;">
+    <div class="dashboard-grid-2">
       <!-- Recent Admissions Table -->
       <div class="card">
         <div class="card-header">
@@ -350,7 +350,7 @@ function renderTeacherDashboard(data) {
 
   const welcomeHeading = document.getElementById('welcome-heading');
   const welcomeSub = document.getElementById('welcome-subheading');
-  if (welcomeHeading) welcomeHeading.innerText = `Teacher Portal &bull; ${teacherProfile ? teacherProfile.fullName : 'Faculty'}`;
+  if (welcomeHeading) welcomeHeading.innerText = `Teacher Portal • ${teacherProfile ? teacherProfile.fullName : 'Faculty'}`;
   if (welcomeSub) welcomeSub.innerText = `Assigned Classes: ${assignedClasses.join(', ') || 'General'}`;
 
   let html = `
@@ -461,7 +461,7 @@ function renderParentDashboard(data) {
 
   const welcomeHeading = document.getElementById('welcome-heading');
   const welcomeSub = document.getElementById('welcome-subheading');
-  if (welcomeHeading) welcomeHeading.innerText = `Parent Portal &bull; Welcome, ${parentName}`;
+  if (welcomeHeading) welcomeHeading.innerText = `Parent Portal • Welcome, ${parentName}`;
   if (welcomeSub) welcomeSub.innerText = `Track your children's attendance, fees, and academic standing`;
 
   if (!children || children.length === 0) {
@@ -498,7 +498,7 @@ function renderParentDashboard(data) {
                 <div class="table-user-info">
                   <h2 style="font-size: 1.3rem; color: var(--primary);">${child.fullName}</h2>
                   <p style="font-size: 0.85rem; color: var(--text-muted);">
-                    ID: <strong>${child.studentId}</strong> &bull; Class: <strong>${child.className}-${child.section}</strong> &bull; Roll #: <strong>${child.rollNumber || 'N/A'}</strong>
+                    ID: <strong>${child.studentId}</strong> • Class: <strong>${child.className}-${child.section}</strong> • Roll #: <strong>${child.rollNumber || 'N/A'}</strong>
                   </p>
                 </div>
               </div>
@@ -601,8 +601,8 @@ function renderStudentDashboard(data) {
   const className = studentProfile ? `${studentProfile.className}-${studentProfile.section}` : 'N/A';
   const rollNumber = studentProfile ? (studentProfile.rollNumber || 'N/A') : 'N/A';
 
-  if (welcomeHeading) welcomeHeading.innerText = `Student Portal &bull; Welcome, ${studentName}`;
-  if (welcomeSub) welcomeSub.innerText = `Student ID: ${stuId} &bull; Class: ${className} &bull; Roll #: ${rollNumber}`;
+  if (welcomeHeading) welcomeHeading.innerText = `Student Portal • Welcome, ${studentName}`;
+  if (welcomeSub) welcomeSub.innerText = `Student ID: ${stuId} • Class: ${className} • Roll #: ${rollNumber}`;
 
   if (!studentProfile) {
     view.innerHTML = `
@@ -636,7 +636,7 @@ function renderStudentDashboard(data) {
         <div class="stat-content">
           <h3>Attendance Rate</h3>
           <div class="stat-number" style="color: var(--success);">${attRate}%</div>
-          <div class="stat-subtext">${attendanceStats.present || 0} Present &bull; ${attendanceStats.absent || 0} Absent</div>
+          <div class="stat-subtext">${attendanceStats.present || 0} Present • ${attendanceStats.absent || 0} Absent</div>
         </div>
         <div class="stat-icon success"><i class="fa-solid fa-calendar-check"></i></div>
       </div>
@@ -675,14 +675,17 @@ function renderStudentDashboard(data) {
       </div>
     </div>
 
-    <!-- Main Content Layout: Profile Sidebar & Tables -->
-    <div style="display: grid; grid-template-columns: 320px 1fr; gap: 1.5rem; align-items: start;">
+    <!-- Main Content Layout: Profile Sidebar & Tables (Fully Responsive) -->
+    <div class="dashboard-two-col">
       
       <!-- Left Column: Student Profile Details -->
       <div style="display: flex; flex-direction: column; gap: 1.5rem;">
         <div class="card">
           <div class="card-header" style="text-align: center; display: flex; flex-direction: column; align-items: center; padding-top: 1.75rem;">
             <img src="${studentProfile.photoUrl || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150'}" 
+                 onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'"
+                 style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #e0f2fe; box-shadow: var(--shadow-md); margin-bottom: 0.75rem;" 
+                 alt="${studentProfile.fullName}"> 
                  style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #e0f2fe; box-shadow: var(--shadow-md); margin-bottom: 0.75rem;" 
                  alt="${studentProfile.fullName}">
             <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.2rem;">${studentProfile.fullName}</h2>

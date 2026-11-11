@@ -160,25 +160,122 @@ const Utils = (() => {
     openModal('global-confirm-modal');
   }
 
-  // Mobile Sidebar Toggle Initialization
+  // Universal Responsive Sidebar Controller (Desktop Collapse & Mobile Off-Canvas Drawer)
   function initSidebar() {
-    const toggleBtn = document.getElementById('menu-toggle');
+    const appContainer = document.querySelector('.app-container');
     const sidebar = document.querySelector('.sidebar');
-    if (toggleBtn && sidebar) {
-      toggleBtn.addEventListener('click', () => {
-        sidebar.classList.toggle('open');
-      });
+    const menuToggle = document.getElementById('menu-toggle');
 
-      // Close when clicking outside on mobile
-      document.addEventListener('click', (e) => {
-        if (window.innerWidth <= 992 &&
-            !sidebar.contains(e.target) &&
-            !toggleBtn.contains(e.target) &&
-            sidebar.classList.contains('open')) {
-          sidebar.classList.remove('open');
+    if (!sidebar) return;
+
+    // 1. Ensure Cross (X) close button exists inside .sidebar-brand
+    const brand = sidebar.querySelector('.sidebar-brand');
+    let closeBtn = document.getElementById('sidebar-close-btn');
+    if (!closeBtn && brand) {
+      closeBtn = document.createElement('button');
+      closeBtn.id = 'sidebar-close-btn';
+      closeBtn.className = 'sidebar-close-btn';
+      closeBtn.setAttribute('type', 'button');
+      closeBtn.setAttribute('title', 'Close Sidebar');
+      closeBtn.setAttribute('aria-label', 'Close Sidebar');
+      closeBtn.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+      brand.appendChild(closeBtn);
+    }
+
+    // 2. Ensure Backdrop Overlay exists in DOM
+    let overlay = document.getElementById('sidebar-overlay');
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'sidebar-overlay';
+      overlay.className = 'sidebar-overlay';
+      document.body.appendChild(overlay);
+    }
+
+    const isMobile = () => window.innerWidth <= 1024;
+
+    function openMobileSidebar() {
+      if (appContainer) appContainer.classList.add('sidebar-open');
+      sidebar.classList.add('open');
+      overlay.classList.add('active');
+      document.body.classList.add('sidebar-locked');
+    }
+
+    function closeMobileSidebar() {
+      if (appContainer) appContainer.classList.remove('sidebar-open');
+      sidebar.classList.remove('open');
+      overlay.classList.remove('active');
+      document.body.classList.remove('sidebar-locked');
+    }
+
+    function toggleDesktopSidebar() {
+      if (appContainer) {
+        appContainer.classList.toggle('sidebar-collapsed');
+      } else {
+        sidebar.classList.toggle('collapsed');
+      }
+    }
+
+    // Header Hamburger button
+    if (menuToggle) {
+      menuToggle.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isMobile()) {
+          const isOpen = (appContainer && appContainer.classList.contains('sidebar-open')) || sidebar.classList.contains('open');
+          if (isOpen) {
+            closeMobileSidebar();
+          } else {
+            openMobileSidebar();
+          }
+        } else {
+          toggleDesktopSidebar();
+        }
+      };
+    }
+
+    // Cross (X) button inside sidebar
+    if (closeBtn) {
+      closeBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (isMobile()) {
+          closeMobileSidebar();
+        } else {
+          toggleDesktopSidebar();
+        }
+      };
+    }
+
+    // Backdrop overlay click to close on mobile
+    overlay.onclick = () => {
+      closeMobileSidebar();
+    };
+
+    // ESC key closes mobile drawer or desktop collapse
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (isMobile() && ((appContainer && appContainer.classList.contains('sidebar-open')) || sidebar.classList.contains('open'))) {
+          closeMobileSidebar();
+        }
+      }
+    });
+
+    // Close mobile drawer when clicking navigation menu links
+    const navLinks = sidebar.querySelectorAll('.sidebar-menu a');
+    navLinks.forEach(link => {
+      link.addEventListener('click', () => {
+        if (isMobile()) {
+          closeMobileSidebar();
         }
       });
-    }
+    });
+
+    // Reset mobile classes on window resize to desktop
+    window.addEventListener('resize', () => {
+      if (!isMobile()) {
+        closeMobileSidebar();
+      }
+    });
   }
 
   // Print voucher or element
