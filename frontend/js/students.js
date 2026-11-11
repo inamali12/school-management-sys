@@ -115,10 +115,10 @@ async function loadStudents() {
           <td><strong style="color: var(--primary); font-family: monospace; font-size: 0.95rem;">${student.studentId}</strong></td>
           <td>
             <div class="table-user-cell">
-              <img src="${avatar}" class="table-avatar" alt="${student.fullName}">
+              <img src="${avatar}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="table-avatar" alt="${student.fullName}">
               <div class="table-user-info">
                 <strong>${student.fullName}</strong>
-                <small>${student.gender} &bull; DOB: ${Utils.formatDate(student.dob)}</small>
+                <small>${student.gender} • DOB: ${Utils.formatDate(student.dob)}</small>
               </div>
             </div>
           </td>
@@ -266,11 +266,11 @@ async function viewStudentDetails(id) {
 
     content.innerHTML = `
       <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);">
-        <img src="${avatar}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--secondary);" alt="${s.fullName}">
+        <img src="${avatar}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--secondary);" alt="${s.fullName}">
         <div>
           <h2 style="font-size: 1.4rem; color: var(--primary);">${s.fullName}</h2>
           <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.2rem;">
-            ID: <strong>${s.studentId}</strong> &bull; Class: <strong>${s.className}-${s.section}</strong> &bull; Roll #: <strong>${s.rollNumber || 'N/A'}</strong>
+            ID: <strong>${s.studentId}</strong> • Class: <strong>${s.className}-${s.section}</strong> • Roll #: <strong>${s.rollNumber || 'N/A'}</strong>
           </div>
           <div style="margin-top: 0.4rem;">
             <span class="badge ${s.status === 'Active' ? 'badge-active' : 'badge-inactive'}">${s.status}</span>

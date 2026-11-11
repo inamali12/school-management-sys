@@ -253,7 +253,7 @@ function renderAdminDashboard(data) {
                 <tr>
                   <td>
                     <div class="table-user-cell">
-                      <img src="${s.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}" class="table-avatar" alt="${s.fullName}">
+                      <img src="${s.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="table-avatar" alt="${s.fullName}">
                       <div class="table-user-info">
                         <strong>${s.fullName}</strong>
                         <small>${s.studentId}</small>
@@ -430,7 +430,7 @@ function renderTeacherDashboard(data) {
               <tr>
                 <td>
                   <div class="table-user-cell">
-                    <img src="${s.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}" class="table-avatar" alt="${s.fullName}">
+                    <img src="${s.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="table-avatar" alt="${s.fullName}">
                     <div class="table-user-info">
                       <strong>${s.fullName}</strong>
                       <small>${s.studentId}</small>
@@ -494,7 +494,7 @@ function renderParentDashboard(data) {
           <div class="card" style="border: 2px solid #e0f2fe;">
             <div class="card-header" style="background: linear-gradient(90deg, #f0f9ff, #ffffff);">
               <div class="table-user-cell">
-                <img src="${child.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}" class="table-avatar" style="width: 52px; height: 52px;" alt="${child.fullName}">
+                <img src="${child.photoUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="table-avatar" style="width: 52px; height: 52px;" alt="${child.fullName}">
                 <div class="table-user-info">
                   <h2 style="font-size: 1.3rem; color: var(--primary);">${child.fullName}</h2>
                   <p style="font-size: 0.85rem; color: var(--text-muted);">
@@ -682,12 +682,7 @@ function renderStudentDashboard(data) {
       <div style="display: flex; flex-direction: column; gap: 1.5rem;">
         <div class="card">
           <div class="card-header" style="text-align: center; display: flex; flex-direction: column; align-items: center; padding-top: 1.75rem;">
-            <img src="${studentProfile.photoUrl || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150'}" 
-                 onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'"
-                 style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #e0f2fe; box-shadow: var(--shadow-md); margin-bottom: 0.75rem;" 
-                 alt="${studentProfile.fullName}"> 
-                 style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #e0f2fe; box-shadow: var(--shadow-md); margin-bottom: 0.75rem;" 
-                 alt="${studentProfile.fullName}">
+            <img src="${studentProfile.photoUrl || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150'}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #e0f2fe; box-shadow: var(--shadow-md); margin-bottom: 0.75rem;" alt="${studentProfile.fullName}">
             <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.2rem;">${studentProfile.fullName}</h2>
             <span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">${studentProfile.studentId}</span>
           </div>

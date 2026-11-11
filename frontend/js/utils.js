@@ -111,6 +111,16 @@ const Utils = (() => {
     if (modal) {
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
+
+      // Clicking outside modal dialog (on the backdrop) closes the modal
+      if (!modal.dataset.backdropBound) {
+        modal.addEventListener('click', (e) => {
+          if (e.target === modal) {
+            closeModal(modalId);
+          }
+        });
+        modal.dataset.backdropBound = 'true';
+      }
     }
   }
 
@@ -118,7 +128,11 @@ const Utils = (() => {
     const modal = document.getElementById(modalId);
     if (modal) {
       modal.classList.remove('active');
-      document.body.style.overflow = '';
+      // If no other modal is currently active, restore scrolling
+      const anyActive = document.querySelector('.modal-backdrop.active');
+      if (!anyActive) {
+        document.body.style.overflow = '';
+      }
     }
   }
 
@@ -251,9 +265,14 @@ const Utils = (() => {
       closeMobileSidebar();
     };
 
-    // ESC key closes mobile drawer or desktop collapse
+    // ESC key closes any active modal dialog first, or the mobile drawer
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
+        const activeModal = document.querySelector('.modal-backdrop.active');
+        if (activeModal) {
+          closeModal(activeModal.id);
+          return;
+        }
         if (isMobile() && ((appContainer && appContainer.classList.contains('sidebar-open')) || sidebar.classList.contains('open'))) {
           closeMobileSidebar();
         }

@@ -110,7 +110,7 @@ async function loadTeachers() {
           <td><strong style="color: var(--primary); font-family: monospace; font-size: 0.95rem;">${teacher.teacherId}</strong></td>
           <td>
             <div class="table-user-cell">
-              <img src="${avatar}" class="table-avatar" alt="${teacher.fullName}">
+              <img src="${avatar}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="table-avatar" alt="${teacher.fullName}">
               <div class="table-user-info">
                 <strong>${teacher.fullName}</strong>
                 <small>${teacher.email}</small>
@@ -253,11 +253,11 @@ async function viewTeacherDetails(id) {
 
     content.innerHTML = `
       <div style="display: flex; align-items: center; gap: 1.5rem; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);">
-        <img src="${avatar}" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary);" alt="${t.fullName}">
+        <img src="${avatar}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary);" alt="${t.fullName}">
         <div>
           <h2 style="font-size: 1.4rem; color: var(--primary);">${t.fullName}</h2>
           <div style="font-size: 0.9rem; color: var(--text-muted); margin-top: 0.2rem;">
-            ID: <strong>${t.teacherId}</strong> &bull; Department: <strong>${t.subject}</strong> &bull; Class Teacher: <strong>${t.assignedClass}</strong>
+            ID: <strong>${t.teacherId}</strong> • Department: <strong>${t.subject}</strong> • Class Teacher: <strong>${t.assignedClass}</strong>
           </div>
           <div style="margin-top: 0.4rem;">
             <span class="badge ${t.status === 'Active' ? 'badge-active' : 'badge-inactive'}">${t.status}</span>

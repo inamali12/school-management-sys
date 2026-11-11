@@ -6,48 +6,64 @@
 
 :root {
   /* Color Palette - Navy & Sky Blue Professional Theme */
-  --primary: #1e3a8a;          /* Deep Navy Blue */
+  --primary: #1e3a8a;
+  /* Deep Navy Blue */
   --primary-hover: #172554;
   --primary-light: #eff6ff;
   --primary-glow: rgba(30, 58, 138, 0.15);
 
-  --secondary: #0ea5e9;        /* Sky Blue */
+  --secondary: #0ea5e9;
+  /* Sky Blue */
   --secondary-hover: #0284c7;
   --secondary-light: #f0f9ff;
 
-  --accent: #3b82f6;           /* Royal Blue */
+  --accent: #3b82f6;
+  /* Royal Blue */
   --accent-light: #dbeafe;
 
   /* Semantic Status Colors */
-  --success: #10b981;          /* Emerald Green */
+  --success: #10b981;
+  /* Emerald Green */
   --success-bg: #ecfdf5;
   --success-border: #a7f3d0;
 
-  --warning: #f59e0b;          /* Amber */
+  --warning: #f59e0b;
+  /* Amber */
   --warning-bg: #fffbeb;
   --warning-border: #fde68a;
 
-  --danger: #ef4444;           /* Coral Red */
+  --danger: #ef4444;
+  /* Coral Red */
   --danger-bg: #fef2f2;
   --danger-border: #fecaca;
 
-  --info: #0284c7;             /* Ocean Blue */
+  --info: #0284c7;
+  /* Ocean Blue */
   --info-bg: #f0f9ff;
   --info-border: #bae6fd;
 
   /* Neutral Shades */
-  --bg-main: #f8fafc;          /* Light Slate background */
-  --bg-card: #ffffff;          /* Pure White */
-  --bg-sidebar: #0f172a;       /* Slate 900 */
-  --bg-sidebar-hover: #1e293b; /* Slate 800 */
-  --bg-sidebar-active: #1e3a8a;/* Navy Active */
+  --bg-main: #f8fafc;
+  /* Light Slate background */
+  --bg-card: #ffffff;
+  /* Pure White */
+  --bg-sidebar: #0f172a;
+  /* Slate 900 */
+  --bg-sidebar-hover: #1e293b;
+  /* Slate 800 */
+  --bg-sidebar-active: #1e3a8a;
+  /* Navy Active */
 
-  --text-main: #0f172a;        /* Slate 900 */
-  --text-muted: #64748b;       /* Slate 500 */
-  --text-light: #94a3b8;       /* Slate 400 */
+  --text-main: #0f172a;
+  /* Slate 900 */
+  --text-muted: #64748b;
+  /* Slate 500 */
+  --text-light: #94a3b8;
+  /* Slate 400 */
   --text-white: #ffffff;
 
-  --border-color: #e2e8f0;     /* Slate 200 */
+  --border-color: #e2e8f0;
+  /* Slate 200 */
   --border-focus: #38bdf8;
 
   /* Shadows */
@@ -70,7 +86,9 @@
 }
 
 /* Reset & Box Sizing */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -89,7 +107,7 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 a {
@@ -105,7 +123,6 @@ a {
   min-height: 100vh;
   width: 100%;
   position: relative;
-  overflow-x: hidden;
 }
 
 /* Sidebar Styles */
@@ -357,9 +374,20 @@ body.sidebar-locked {
   letter-spacing: 0.04em;
 }
 
-.badge-admin { background: #3b82f6; color: white; }
-.badge-teacher { background: #10b981; color: white; }
-.badge-parent { background: #8b5cf6; color: white; }
+.badge-admin {
+  background: #3b82f6;
+  color: white;
+}
+
+.badge-teacher {
+  background: #10b981;
+  color: white;
+}
+
+.badge-parent {
+  background: #8b5cf6;
+  color: white;
+}
 
 .btn-sidebar-logout {
   background: none;
@@ -402,19 +430,22 @@ body.sidebar-locked {
   }
 }
 
-/* Top Navigation Header */
+/* Top Navigation Header - Sticky Across All Pages & Viewports */
 .top-header {
   height: var(--header-height);
-  background-color: var(--bg-card);
+  background-color: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--border-color);
   padding: 0 1.75rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  position: -webkit-sticky;
   position: sticky;
   top: 0;
-  z-index: 90;
-  box-shadow: var(--shadow-sm);
+  z-index: 100;
+  box-shadow: 0 2px 8px -2px rgba(0, 0, 0, 0.06);
   gap: 1rem;
 }
 

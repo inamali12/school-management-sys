@@ -64,6 +64,11 @@
 .stat-card.danger::after { background-color: var(--danger); }
 .stat-card.info::after { background-color: var(--accent); }
 
+.stat-content {
+  flex: 1;
+  min-width: 0;
+}
+
 .stat-content h3 {
   font-size: 0.8rem;
   font-weight: 600;
@@ -78,6 +83,23 @@
   font-weight: 800;
   color: var(--text-main);
   line-height: 1.1;
+  letter-spacing: -0.02em;
+  word-break: break-word;
+}
+
+@media (max-width: 576px) {
+  .stat-card {
+    padding: 1.1rem;
+  }
+  .stat-number {
+    font-size: 1.5rem;
+  }
+  .stat-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 1.2rem;
+  }
+}
   letter-spacing: -0.02em;
 }
 
@@ -460,7 +482,7 @@
 }
 
 /* ----------------------------------------------------
-   7. MODAL DIALOGS
+   7. MODAL DIALOGS - Fully Scrollable & Viewport Constrained
    ---------------------------------------------------- */
 .modal-backdrop {
   position: fixed;
@@ -470,14 +492,16 @@
   bottom: 0;
   background-color: rgba(15, 23, 42, 0.65);
   backdrop-filter: blur(4px);
-  z-index: 999;
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 2000;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
   opacity: 0;
   visibility: hidden;
-  transition: var(--transition);
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  overflow-y: auto;
 }
 
 .modal-backdrop.active {
@@ -494,25 +518,11 @@
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow-xl);
-  transform: scale(0.95);
-  transition: var(--transition);
+  transform: scale(0.96);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
   overflow: hidden;
-}
-
-@media (max-width: 576px) {
-  .modal-dialog {
-    width: 95%;
-    max-height: 92vh;
-    border-radius: var(--radius-lg);
-  }
-
-  .modal-header, .modal-footer {
-    padding: 1rem 1.25rem;
-  }
-
-  .modal-body {
-    padding: 1.25rem;
-  }
+  position: relative;
+  margin: auto;
 }
 
 .modal-dialog.modal-lg {
@@ -527,18 +537,33 @@
   transform: scale(1);
 }
 
+/* Modal Form Flexbox: Ensures body scrolls while header/footer stay anchored */
+.modal-dialog form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
 .modal-header {
   padding: 1.25rem 1.75rem;
   border-bottom: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  background-color: var(--bg-card);
+  flex-shrink: 0;
+  z-index: 2;
 }
 
 .modal-header h3 {
   font-size: 1.2rem;
   font-weight: 700;
   color: var(--text-main);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .modal-close-btn {
@@ -550,26 +575,83 @@
   padding: 0.35rem;
   border-radius: 50%;
   transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
 }
 
 .modal-close-btn:hover {
-  background-color: #f1f5f9;
+  background-color: #fee2e2;
   color: var(--danger);
+  transform: rotate(90deg);
 }
 
 .modal-body {
   padding: 1.75rem;
   overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  flex: 1;
+  min-height: 0;
+  max-height: calc(90vh - 130px);
+}
+
+/* Custom sleek scrollbar for modal-body */
+.modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+.modal-body::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+.modal-body::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+.modal-body::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .modal-footer {
-  padding: 1.25rem 1.75rem;
+  padding: 1.1rem 1.75rem;
   border-top: 1px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 0.75rem;
   background-color: #f8fafc;
+  flex-shrink: 0;
+  z-index: 2;
+}
+
+@media (max-width: 640px) {
+  .modal-backdrop {
+    padding: 0.75rem;
+  }
+
+  .modal-dialog {
+    width: 100%;
+    max-height: 94vh;
+    border-radius: var(--radius-lg);
+  }
+
+  .modal-header, .modal-footer {
+    padding: 0.85rem 1.15rem;
+  }
+
+  .modal-body {
+    padding: 1.15rem;
+    max-height: calc(94vh - 115px);
+  }
+
+  .modal-footer {
+    flex-wrap: wrap;
+  }
+
+  .modal-footer .btn {
+    flex: 1;
+    min-width: 120px;
+  }
 }
 
 /* ----------------------------------------------------
