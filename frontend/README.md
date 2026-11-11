@@ -22,3 +22,4 @@ npm start
 Frontend will be served on `http://localhost:3000`.
 
 > **Note:** Ensure your backend server is running on `http://localhost:5000` (`cd backend && npm start`).
+

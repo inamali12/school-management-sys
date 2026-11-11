@@ -25,3 +25,4 @@ This is the standalone Backend API server for **SchoolConnect**.
    ```
 
 Server will run on **http://localhost:5000** with RESTful endpoints at `/api/*`.
+
