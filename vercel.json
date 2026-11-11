@@ -2,9 +2,16 @@
   "version": 2,
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/api/(.*)",
       "destination": "/api/index.js"
+    },
+    {
+      "source": "/",
+      "destination": "/frontend/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/frontend/$1"
     }
   ]
 }
-

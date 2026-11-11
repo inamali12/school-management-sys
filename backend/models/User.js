@@ -19,7 +19,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Please provide username'],
     unique: true,
-    trim: true
+    trim: true,
+    lowercase: true
   },
   password: {
     type: String,
@@ -29,7 +30,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'teacher', 'parent'],
+    enum: ['admin', 'teacher', 'student', 'parent'],
     default: 'admin'
   },
   phone: {
@@ -39,6 +40,15 @@ const userSchema = new mongoose.Schema({
   teacherRef: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Teacher'
+  },
+  studentRef: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Student'
+  },
+  studentId: {
+    type: String,
+    trim: true,
+    uppercase: true
   },
   studentIds: [{
     type: mongoose.Schema.Types.ObjectId,
@@ -61,6 +71,10 @@ userSchema.pre('save', async function(next) {
   if (!this.isModified('password')) {
     return next();
   }
+  // If already a valid bcrypt hash, do not re-hash to prevent double-hashing
+  if (typeof this.password === 'string' && /^\$2[abxy]\$\d{2}\$[./A-Za-z0-9]{53}$/.test(this.password)) {
+    return next();
+  }
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
   next();
@@ -71,4 +85,3 @@ userSchema.methods.matchPassword = async function(enteredPassword) {
 };
 
 module.exports = mongoose.model('User', userSchema);
-

@@ -16,6 +16,15 @@ exports.getStudents = async (req, res, next) => {
       search
     });
 
+    // Student role restriction: only see own profile
+    if (user.role === 'student') {
+      const myStudentId = (user.studentId || '').toUpperCase();
+      students = students.filter(s =>
+        (user.studentRef && String(s._id) === String(user.studentRef)) ||
+        (myStudentId && String(s.studentId).toUpperCase() === myStudentId)
+      );
+    }
+
     // Parent role restriction: only see linked children
     if (user.role === 'parent') {
       const allowedIds = (user.studentIds || []).map(id => String(id).toUpperCase());
@@ -50,6 +59,19 @@ exports.getStudentById = async (req, res, next) => {
         success: false,
         message: `Student with ID "${id}" not found`
       });
+    }
+
+    // Role check for Student
+    if (user.role === 'student') {
+      const myStudentId = (user.studentId || '').toUpperCase();
+      const matchesRef = user.studentRef && String(user.studentRef) === String(student._id);
+      const matchesId = myStudentId && String(student.studentId).toUpperCase() === myStudentId;
+      if (!matchesRef && !matchesId) {
+        return res.status(403).json({
+          success: false,
+          message: 'Access denied: You are only allowed to view your own student record.'
+        });
+      }
     }
 
     // Role check for Parent
@@ -164,6 +186,15 @@ exports.createStudent = async (req, res, next) => {
       emergencyContact: emergencyContact ? emergencyContact.trim() : parentContact.trim()
     });
 
+    await Storage.activities.create({
+      title: 'New Student Admission',
+      description: `Enrolled student ${newStudent.fullName} (${newStudent.studentId}) in Class ${newStudent.className}-${newStudent.section}`,
+      type: 'admission',
+      performedBy: req.user ? req.user.name : 'Administrator',
+      role: req.user ? req.user.role : 'admin',
+      metadata: { studentId: newStudent.studentId, className: newStudent.className }
+    });
+
     res.status(201).json({
       success: true,
       message: `Student "${newStudent.fullName}" (${newStudent.studentId}) added successfully!`,
@@ -191,6 +222,15 @@ exports.updateStudent = async (req, res, next) => {
 
     const updated = await Storage.students.updateById(existing._id, req.body);
 
+    await Storage.activities.create({
+      title: 'Student Profile Updated',
+      description: `Updated record for ${updated.fullName} (${updated.studentId})`,
+      type: 'system',
+      performedBy: req.user ? req.user.name : 'Administrator',
+      role: req.user ? req.user.role : 'admin',
+      metadata: { studentId: updated.studentId }
+    });
+
     res.status(200).json({
       success: true,
       message: `Student details updated successfully!`,
@@ -217,6 +257,15 @@ exports.deleteStudent = async (req, res, next) => {
     }
 
     await Storage.students.deleteById(existing._id);
+
+    await Storage.activities.create({
+      title: 'Student Record Removed',
+      description: `Deleted student ${existing.fullName} (${existing.studentId})`,
+      type: 'system',
+      performedBy: req.user ? req.user.name : 'Administrator',
+      role: req.user ? req.user.role : 'admin',
+      metadata: { studentId: existing.studentId }
+    });
 
     res.status(200).json({
       success: true,

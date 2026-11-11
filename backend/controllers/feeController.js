@@ -8,6 +8,18 @@ exports.getFees = async (req, res, next) => {
     const { month, className, paymentStatus, studentId, search } = req.query;
     const user = req.user;
 
+    // Student restriction: only see their own fees
+    if (user.role === 'student') {
+      const myStudentId = (user.studentId || '').toUpperCase();
+      let fees = await Storage.fees.find({ month, className, paymentStatus, search });
+      fees = fees.filter(f => String(f.studentId).toUpperCase() === myStudentId);
+      return res.status(200).json({
+        success: true,
+        count: fees.length,
+        data: fees
+      });
+    }
+
     // Parent restriction: only see their children's fees
     if (user.role === 'parent') {
       const allowedIds = (user.studentIds || []).map(id => String(id).toUpperCase());
@@ -60,6 +72,16 @@ exports.getFeeById = async (req, res, next) => {
         success: false,
         message: `Fee record "${id}" not found`
       });
+    }
+
+    if (user.role === 'student') {
+      const myStudentId = (user.studentId || '').toUpperCase();
+      if (String(fee.studentId).toUpperCase() !== myStudentId) {
+        return res.status(403).json({
+          success: false,
+          message: 'Access denied: You can only view your own fee voucher.'
+        });
+      }
     }
 
     if (user.role === 'parent') {
@@ -287,6 +309,15 @@ exports.recordPayment = async (req, res, next) => {
       paymentMethod: paymentMethod || 'Cash',
       notes: notes || '',
       receivedBy: req.user.name || 'Admin'
+    });
+
+    await Storage.activities.create({
+      title: 'Fee Payment Received',
+      description: `Collected Rs. ${Number(amount).toLocaleString()} from ${updated.studentName} (${updated.studentId}) via ${paymentMethod || 'Cash'}. Balance: Rs. ${updated.remainingBalance.toLocaleString()}`,
+      type: 'fee',
+      performedBy: req.user ? req.user.name : 'Accountant',
+      role: req.user ? req.user.role : 'admin',
+      metadata: { feeId: updated.feeId, studentId: updated.studentId, amount: Number(amount) }
     });
 
     res.status(200).json({

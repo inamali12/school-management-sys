@@ -153,13 +153,13 @@
 
     .quick-role-btns {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.6rem;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
     }
 
     .btn-quick-role {
-      padding: 0.5rem 0.4rem;
-      font-size: 0.78rem;
+      padding: 0.5rem 0.3rem;
+      font-size: 0.76rem;
       border-radius: var(--radius-md);
       border: 1px solid var(--border-color);
       background: #f8fafc;
@@ -185,6 +185,7 @@
 
     .btn-quick-role.admin i { color: #2563eb; }
     .btn-quick-role.teacher i { color: #059669; }
+    .btn-quick-role.student i { color: #0284c7; }
     .btn-quick-role.parent i { color: #7c3aed; }
 
     @media (max-width: 860px) {
@@ -273,6 +274,10 @@
             <i class="fa-solid fa-chalkboard-user"></i>
             <span>Teacher</span>
           </button>
+          <button type="button" class="btn-quick-role student" onclick="quickFill('student@schoolconnect.edu.pk', 'student123')">
+            <i class="fa-solid fa-user-graduate"></i>
+            <span>Student</span>
+          </button>
           <button type="button" class="btn-quick-role parent" onclick="quickFill('parent@schoolconnect.edu.pk', 'parent123')">
             <i class="fa-solid fa-people-roof"></i>
             <span>Parent</span>
@@ -284,6 +289,7 @@
 
   <div id="toast-container"></div>
 
+  <script src="js/config.js"></script>
   <script src="js/api.js"></script>
   <script src="js/utils.js"></script>
   <script>

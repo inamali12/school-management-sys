@@ -18,6 +18,18 @@ exports.getAttendance = async (req, res, next) => {
       endDate
     };
 
+    // If student, restrict to own attendance
+    if (user.role === 'student') {
+      const myStudentId = (user.studentId || '').toUpperCase();
+      let records = await Storage.attendance.find({ ...query, studentId: myStudentId });
+      records = records.filter(r => String(r.studentId).toUpperCase() === myStudentId);
+      return res.status(200).json({
+        success: true,
+        count: records.length,
+        data: records
+      });
+    }
+
     // If parent, restrict to their children
     if (user.role === 'parent') {
       const allowedIds = (user.studentIds || []).map(id => String(id).toUpperCase());
@@ -47,7 +59,13 @@ exports.getAttendance = async (req, res, next) => {
 // @access  Private
 exports.getAttendanceStats = async (req, res, next) => {
   try {
-    const { date, className, section, studentId } = req.query;
+    const { date, className, section } = req.query;
+    let studentId = req.query.studentId;
+
+    if (req.user && req.user.role === 'student') {
+      studentId = req.user.studentId;
+    }
+
     const stats = await Storage.attendance.getStats({ date, className, section, studentId });
 
     res.status(200).json({

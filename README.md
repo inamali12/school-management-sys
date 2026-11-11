@@ -39,12 +39,13 @@ The platform eliminates cumbersome manual registers and paper-based tracking by 
 
 ## 3. User Roles & Demo Credentials
 
-The application provides 1-click quick-fill buttons on the login page for university presentation:
+The application provides 1-click quick-fill buttons on the login page for university evaluation and grading:
 
 | Role | Username / Email | Password | Permissions & Capabilities |
 | :--- | :--- | :--- | :--- |
 | **Admin** | `admin@schoolconnect.edu.pk` | `admin123` | Full administrative control: Students, Teachers, Classes, Attendance, Fees, Reports, User Accounts |
-| **Teacher** | `teacher@schoolconnect.edu.pk` | `teacher123` | Access assigned classes, view students, mark daily attendance, view class attendance history. Financial modules are blocked. |
+| **Teacher** | `teacher@schoolconnect.edu.pk` | `teacher123` | Access assigned classes, view students, mark daily & bulk attendance, view class attendance history. Financial modules are blocked. |
+| **Student** | `student@schoolconnect.edu.pk` | `student123` | Access dedicated student portal: view own bio-data, 30-day attendance rate & log, fee vouchers, and enrolled subjects. Isolated from other students. |
 | **Parent** | `parent@schoolconnect.edu.pk` | `parent123` | View registered child's profile, attendance status, fee dues, payment history, and fee vouchers. Restricted exclusively to own child. |
 
 ---
@@ -238,7 +239,7 @@ SchoolConnect/
    ```bash
    npm run seed
    ```
-   *Seeds 5 classes, 5 faculty members, 8 Pakistani students, attendance records, fee vouchers, and demo accounts.*
+   *Seeds 5 classes, 10 faculty members, 50 Pakistani students, 1,300 attendance records spanning 30 days, 50 fee vouchers (Paid, Partial, Pending, Overdue), and audit activity logs.*
 
 5. **Start the Application**:
    ```bash
@@ -269,6 +270,9 @@ npm test
   ✔ PASS: Admin user account exists
   ✔ PASS: Admin password hashes and verifies with bcrypt
   ✔ PASS: Teacher account exists with teacher role
+  ✔ PASS: Student account exists with student role
+  ✔ PASS: Student password hashes and verifies with bcrypt
+  ✔ PASS: Student account links directly to STU-2025-001
   ✔ PASS: Parent account exists with parent role and linked child
 
 [Test Suite 2: Student Management CRUD]
@@ -295,9 +299,15 @@ npm test
   ✔ PASS: Record Full Payment: Balance recalculated to Rs. 0 and status changed to "Paid"
   ✔ PASS: Maintains detailed payment transaction history log
 
-[Test Suite 6: Real-time Dashboard Aggregations]
-  ✔ PASS: Dashboard counts real students
-  ✔ PASS: Dashboard aggregates fee collection
+[Test Suite 6: Real-time Dashboard & Activity Logs]
+  ✔ PASS: Seeded database contains at least 50 students (50 found)
+  ✔ PASS: Seeded database contains 10 teachers (10 found)
+  ✔ PASS: Dashboard aggregates fee collection (69300 PKR)
+  ✔ PASS: Activity audit logger contains recorded entries (6 found)
+  ✔ PASS: Student STU-2025-001 has accessible fee vouchers
+  ✔ PASS: Student STU-2025-001 fees are completely isolated to their ID
+  ✔ PASS: Student STU-2025-001 has 30-day attendance history
+  ✔ PASS: Student STU-2025-001 attendance records are strictly isolated
 
 [Test Suite 7: Clean Up & Delete Operations]
   ✔ PASS: Delete Student successfully (Delete)
@@ -305,7 +315,7 @@ npm test
   ✔ PASS: Delete Fee Voucher successfully (Delete)
 
 ======================================================
-Results: 25 PASSED | 0 FAILED
+Results: 34 PASSED | 0 FAILED
 ======================================================
 ```
 
@@ -316,20 +326,57 @@ Results: 25 PASSED | 0 FAILED
 To connect SchoolConnect to a live MongoDB Atlas cloud database:
 
 1. Create a free cluster on [MongoDB Atlas](https://www.mongodb.com/cloud/atlas).
-2. Click **Connect** &rarr; **Drivers** (Node.js).
-3. Copy your connection string, for example:
+2. Create a Database User (e.g. `inaamalibaloch_db_user`) and set a secure password (make sure to note this password down).
+3. Under **Network Access**, add `0.0.0.0/0` (Allow Access from Anywhere) to permit connections from your machine, Vercel, and Render.
+4. Click **Connect** &rarr; **Drivers** (Node.js).
+5. Copy your connection string, for example:
    ```text
-   mongodb+srv://admin:<password>@cluster0.xyz.mongodb.net/schoolconnect?retryWrites=true&w=majority
+   mongodb+srv://inaamalibaloch_db_user:<password>@school-system.xecfmwx.mongodb.net/schoolconnect?retryWrites=true&w=majority
    ```
-4. Paste it into your `.env` file:
+6. Replace `<password>` with your actual database user password in `.env`:
    ```env
-   MONGODB_URI=mongodb+srv://admin:YourPassword@cluster0.xyz.mongodb.net/schoolconnect?retryWrites=true&w=majority
+   MONGODB_URI=mongodb+srv://inaamalibaloch_db_user:YourActualPassword@school-system.xecfmwx.mongodb.net/schoolconnect?retryWrites=true&w=majority
    ```
-5. Restart the server with `npm start`. The server will automatically connect to MongoDB Atlas and populate your cloud database!
+7. Run `npm run seed` to populate MongoDB Atlas with all 50 students, 10 teachers, 5 classes, 30 days of attendance, and fee vouchers!
 
 ---
 
-## 10. Academic Credit & Affiliation
+## 10. Deployment Guides
+
+### A. Deploy to Vercel (Recommended for Serverless)
+The project comes pre-configured with `vercel.json` and `api/index.js` for zero-configuration Vercel deployment:
+
+1. Push your repository to GitHub:
+   ```bash
+   git add .
+   git commit -m "feat: complete SchoolConnect production system"
+   git push origin main
+   ```
+2. Log in to [vercel.com](https://vercel.com) and click **"Add New Project"**.
+3. Import your GitHub repository (`SchoolConnect` or your chosen repo name).
+4. In **Environment Variables**, add:
+   * `MONGODB_URI`: Your MongoDB Atlas URI with your actual password
+   * `JWT_SECRET`: A secure random secret string
+   * `NODE_ENV`: `production`
+5. Click **Deploy**. Vercel will build and serve your static frontend through its global edge CDN, and route all `/api/*` endpoints to the serverless function in `api/index.js`!
+
+### B. Deploy to Render (Recommended for Standalone Node.js)
+1. Push your repository to GitHub.
+2. Log in to [render.com](https://render.com) and click **"New Web Service"**.
+3. Connect your GitHub repository.
+4. Set the following configuration:
+   * **Runtime**: Node
+   * **Build Command**: `npm install`
+   * **Start Command**: `npm start`
+5. Under **Environment Variables**, add:
+   * `MONGODB_URI`: Your MongoDB Atlas connection string
+   * `JWT_SECRET`: A secure random secret string
+   * `NODE_ENV`: `production`
+6. Click **Create Web Service**. Render will deploy the Express server and serve the complete frontend and REST APIs.
+
+---
+
+## 11. Academic Credit & Affiliation
 
 - **Institution**: Mehran University of Engineering and Technology (MUET), Shaheed Zulfiqar Ali Bhutto (SZAB) Campus, Khairpur Mir's, Sindh, Pakistan.
 - **Department**: Department of Software Engineering.

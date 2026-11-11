@@ -41,6 +41,12 @@ async function runTestSuite() {
   const teacherUser = await Storage.users.findOne({ username: 'teacher' });
   assert(teacherUser && teacherUser.role === 'teacher', 'Teacher account exists with teacher role');
 
+  const studentUser = await Storage.users.findOne({ username: 'student' }, true);
+  assert(studentUser && studentUser.role === 'student', 'Student account exists with student role');
+  const isStudentMatch = await bcrypt.compare('student123', studentUser.password);
+  assert(isStudentMatch, 'Student password hashes and verifies with bcrypt');
+  assert(studentUser.studentId === 'STU-2025-001', 'Student account links directly to STU-2025-001');
+
   const parentUser = await Storage.users.findOne({ username: 'parent' });
   assert(parentUser && parentUser.role === 'parent', 'Parent account exists with parent role and linked child');
 
@@ -218,13 +224,28 @@ async function runTestSuite() {
   );
   assert(fullPayment.payments.length === 2, 'Maintains detailed payment transaction history log');
 
-  // 6. DASHBOARD AGGREGATIONS
-  console.log('\n[Test Suite 6: Real-time Dashboard Aggregations]');
+  // 6. DASHBOARD & ACTIVITIES AGGREGATIONS
+  console.log('\n[Test Suite 6: Real-time Dashboard & Activity Logs]');
   const totalStudents = await Storage.students.count();
-  assert(totalStudents >= 8, `Dashboard counts real students (${totalStudents})`);
+  assert(totalStudents >= 50, `Seeded database contains at least 50 students (${totalStudents} found)`);
+
+  const totalTeachers = await Storage.teachers.count();
+  assert(totalTeachers >= 10, `Seeded database contains 10 teachers (${totalTeachers} found)`);
 
   const feeStats = await Storage.fees.getStats();
   assert(feeStats.totalCollected > 0, `Dashboard aggregates fee collection (${feeStats.totalCollected} PKR)`);
+
+  const activities = await Storage.activities.find({});
+  assert(activities && activities.length > 0, `Activity audit logger contains recorded entries (${activities.length} found)`);
+
+  // Test Student Data Isolation
+  const studentSTU001Fees = await Storage.fees.find({ studentId: 'STU-2025-001' });
+  assert(studentSTU001Fees.length > 0, 'Student STU-2025-001 has accessible fee vouchers');
+  assert(studentSTU001Fees.every(f => f.studentId === 'STU-2025-001'), 'Student STU-2025-001 fees are completely isolated to their ID');
+
+  const studentSTU001Att = await Storage.attendance.find({ studentId: 'STU-2025-001' });
+  assert(studentSTU001Att.length > 0, 'Student STU-2025-001 has 30-day attendance history');
+  assert(studentSTU001Att.every(a => a.studentId === 'STU-2025-001'), 'Student STU-2025-001 attendance records are strictly isolated');
 
   // 7. CLEANUP TEST DATA
   console.log('\n[Test Suite 7: Clean Up & Delete Operations]');

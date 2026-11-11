@@ -12,12 +12,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     loadingEl.style.display = 'none';
     viewEl.style.display = 'block';
 
-    const currentUser = API.getUser();
-
     if (response.role === 'admin') {
       renderAdminDashboard(response);
     } else if (response.role === 'teacher') {
       renderTeacherDashboard(response);
+    } else if (response.role === 'student') {
+      renderStudentDashboard(response);
     } else if (response.role === 'parent') {
       renderParentDashboard(response);
     }
@@ -45,7 +45,6 @@ function renderAdminDashboard(data) {
   const view = document.getElementById('dashboard-view');
 
   const attRate = stats.todayAttendance.rate || 0;
-  const totalBilled = (stats.financial.totalCollected || 0) + (stats.financial.totalPending || 0);
 
   let html = `
     <!-- Top 4 Primary Metric Cards -->
@@ -309,6 +308,34 @@ function renderAdminDashboard(data) {
         </div>
       </div>
     </div>
+
+    <!-- Recent System Activities / Audit Trail -->
+    ${data.recentActivities && data.recentActivities.length ? `
+    <div class="card" style="margin-top: 1.5rem;">
+      <div class="card-header">
+        <div class="card-title-group">
+          <h2><i class="fa-solid fa-clock-rotate-left" style="color: var(--secondary); margin-right: 0.4rem;"></i> Recent System Activities</h2>
+          <p>Live audit trail of admissions, attendance marking, and fee transactions</p>
+        </div>
+      </div>
+      <div class="card-body" style="padding: 1rem 1.5rem;">
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          ${data.recentActivities.map(act => `
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: #f8fafc; border-radius: var(--radius-md); border-left: 4px solid ${act.type === 'admission' ? '#3b82f6' : act.type === 'fee' ? '#10b981' : act.type === 'attendance' ? '#f59e0b' : '#6366f1'};">
+              <div>
+                <strong style="color: var(--text-main); font-size: 0.9rem;">${act.title}</strong>
+                <p style="color: var(--text-muted); font-size: 0.82rem; margin: 0.2rem 0 0;">${act.description}</p>
+              </div>
+              <div style="text-align: right; font-size: 0.78rem; color: var(--text-light); white-space: nowrap; margin-left: 1rem;">
+                <span class="badge" style="background: #e2e8f0; color: #334155; margin-bottom: 0.25rem;">${act.performedBy || 'System'}</span><br>
+                ${Utils.formatDate(act.createdAt)}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+    ` : ''}
   `;
 
   view.innerHTML = html;
@@ -559,3 +586,256 @@ function renderParentDashboard(data) {
   view.innerHTML = html;
 }
 
+// ----------------------------------------------------
+// 4. STUDENT PORTAL DASHBOARD
+// ----------------------------------------------------
+function renderStudentDashboard(data) {
+  const { studentProfile, attendanceStats, todayStatus, feeSummary, feeRecords, subjects, recentAttendance } = data;
+  const view = document.getElementById('dashboard-view');
+
+  const welcomeHeading = document.getElementById('welcome-heading');
+  const welcomeSub = document.getElementById('welcome-subheading');
+
+  const studentName = studentProfile ? studentProfile.fullName : (data.studentName || 'Student');
+  const stuId = studentProfile ? studentProfile.studentId : 'N/A';
+  const className = studentProfile ? `${studentProfile.className}-${studentProfile.section}` : 'N/A';
+  const rollNumber = studentProfile ? (studentProfile.rollNumber || 'N/A') : 'N/A';
+
+  if (welcomeHeading) welcomeHeading.innerText = `Student Portal &bull; Welcome, ${studentName}`;
+  if (welcomeSub) welcomeSub.innerText = `Student ID: ${stuId} &bull; Class: ${className} &bull; Roll #: ${rollNumber}`;
+
+  if (!studentProfile) {
+    view.innerHTML = `
+      <div class="card">
+        <div class="card-body empty-state">
+          <div class="empty-state-icon" style="color: var(--secondary); background: #f0fdf4;">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+          <h3>Student Profile Not Linked</h3>
+          <p>${data.message || 'Please contact school administration with your Student ID to link your academic record.'}</p>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const attRate = attendanceStats ? (attendanceStats.attendanceRate !== undefined ? attendanceStats.attendanceRate : (attendanceStats.percentage || 0)) : 0;
+  const totalDue = feeSummary ? (feeSummary.remainingBalance || 0) : 0;
+  const totalPaid = feeSummary ? (feeSummary.paidAmount || 0) : 0;
+
+  const todayStatusClass = todayStatus === 'Present' ? 'badge-present'
+    : todayStatus === 'Absent' ? 'badge-absent'
+    : todayStatus === 'Late' ? 'badge-late'
+    : todayStatus === 'Leave' ? 'badge-leave'
+    : 'badge-pending';
+
+  let html = `
+    <!-- Top Key Metrics Cards -->
+    <div class="stats-grid">
+      <div class="stat-card success">
+        <div class="stat-content">
+          <h3>Attendance Rate</h3>
+          <div class="stat-number" style="color: var(--success);">${attRate}%</div>
+          <div class="stat-subtext">${attendanceStats.present || 0} Present &bull; ${attendanceStats.absent || 0} Absent</div>
+        </div>
+        <div class="stat-icon success"><i class="fa-solid fa-calendar-check"></i></div>
+      </div>
+
+      <div class="stat-card primary">
+        <div class="stat-content">
+          <h3>Today's Attendance</h3>
+          <div class="stat-number" style="font-size: 1.45rem;">
+            <span class="badge ${todayStatusClass}" style="font-size: 1.05rem; padding: 0.35rem 0.85rem;">
+              ${todayStatus}
+            </span>
+          </div>
+          <div class="stat-subtext">Class ${className} Attendance</div>
+        </div>
+        <div class="stat-icon primary"><i class="fa-solid fa-user-clock"></i></div>
+      </div>
+
+      <div class="stat-card ${totalDue > 0 ? 'danger' : 'success'}">
+        <div class="stat-content">
+          <h3>Fee Balance Due</h3>
+          <div class="stat-number" style="font-size: 1.5rem; color: ${totalDue > 0 ? 'var(--danger)' : 'var(--success)'};">
+            ${Utils.formatCurrency(totalDue)}
+          </div>
+          <div class="stat-subtext">${totalDue === 0 ? 'All fee dues cleared' : 'Outstanding dues pending'}</div>
+        </div>
+        <div class="stat-icon ${totalDue > 0 ? 'danger' : 'success'}"><i class="fa-solid fa-receipt"></i></div>
+      </div>
+
+      <div class="stat-card info">
+        <div class="stat-content">
+          <h3>Total Fees Paid</h3>
+          <div class="stat-number" style="font-size: 1.5rem;">${Utils.formatCurrency(totalPaid)}</div>
+          <div class="stat-subtext">${feeRecords ? feeRecords.length : 0} Billing Cycles</div>
+        </div>
+        <div class="stat-icon info"><i class="fa-solid fa-wallet"></i></div>
+      </div>
+    </div>
+
+    <!-- Main Content Layout: Profile Sidebar & Tables -->
+    <div style="display: grid; grid-template-columns: 320px 1fr; gap: 1.5rem; align-items: start;">
+      
+      <!-- Left Column: Student Profile Details -->
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <div class="card">
+          <div class="card-header" style="text-align: center; display: flex; flex-direction: column; align-items: center; padding-top: 1.75rem;">
+            <img src="${studentProfile.photoUrl || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150'}" 
+                 style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #e0f2fe; box-shadow: var(--shadow-md); margin-bottom: 0.75rem;" 
+                 alt="${studentProfile.fullName}">
+            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.2rem;">${studentProfile.fullName}</h2>
+            <span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">${studentProfile.studentId}</span>
+          </div>
+
+          <div class="card-body" style="padding: 1rem 1.25rem;">
+            <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem;">
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;">
+                <span style="color: var(--text-muted);"><i class="fa-solid fa-user-tag" style="margin-right: 0.4rem;"></i> Father's Name</span>
+                <strong>${studentProfile.fatherName}</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;">
+                <span style="color: var(--text-muted);"><i class="fa-solid fa-school" style="margin-right: 0.4rem;"></i> Class & Section</span>
+                <strong>${studentProfile.className} (${studentProfile.section})</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;">
+                <span style="color: var(--text-muted);"><i class="fa-solid fa-hashtag" style="margin-right: 0.4rem;"></i> Roll Number</span>
+                <strong>${studentProfile.rollNumber || 'N/A'}</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;">
+                <span style="color: var(--text-muted);"><i class="fa-solid fa-venus-mars" style="margin-right: 0.4rem;"></i> Gender</span>
+                <strong>${studentProfile.gender}</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;">
+                <span style="color: var(--text-muted);"><i class="fa-solid fa-cake-candles" style="margin-right: 0.4rem;"></i> Date of Birth</span>
+                <strong>${studentProfile.dob || 'N/A'}</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;">
+                <span style="color: var(--text-muted);"><i class="fa-solid fa-id-card" style="margin-right: 0.4rem;"></i> B-Form / CNIC</span>
+                <strong>${studentProfile.bFormOrCnic || 'N/A'}</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;">
+                <span style="color: var(--text-muted);"><i class="fa-solid fa-phone" style="margin-right: 0.4rem;"></i> Contact</span>
+                <strong>${studentProfile.contactNumber || 'N/A'}</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; padding-bottom: 0.2rem;">
+                <span style="color: var(--text-muted);"><i class="fa-solid fa-calendar-days" style="margin-right: 0.4rem;"></i> Admission Date</span>
+                <strong>${Utils.formatDate(studentProfile.admissionDate)}</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Enrolled Subjects Card -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h2><i class="fa-solid fa-book-open" style="color: var(--primary); margin-right: 0.4rem;"></i> Class Subjects</h2>
+              <p>Curriculum assigned to ${studentProfile.className}</p>
+            </div>
+          </div>
+          <div class="card-body" style="padding: 1rem 1.25rem;">
+            ${subjects && subjects.length ? `
+              <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                ${subjects.map(sub => `
+                  <span class="badge" style="background: #f1f5f9; color: var(--text-main); font-weight: 600; padding: 0.4rem 0.75rem; border: 1px solid #cbd5e1;">
+                    <i class="fa-solid fa-bookmark" style="color: var(--secondary); margin-right: 0.35rem;"></i>${sub}
+                  </span>
+                `).join('')}
+              </div>
+            ` : '<p style="color: var(--text-muted); font-size: 0.88rem;">No subjects defined for this class.</p>'}
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Fee Vouchers & Attendance Log -->
+      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        
+        <!-- Monthly Fee Vouchers -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h2><i class="fa-solid fa-receipt" style="color: var(--secondary); margin-right: 0.4rem;"></i> My Fee Vouchers & Invoices</h2>
+              <p>Review monthly billing, payment status, and dues</p>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Voucher #</th>
+                  <th>Month</th>
+                  <th>Total Fee</th>
+                  <th>Paid Amount</th>
+                  <th>Remaining</th>
+                  <th>Status</th>
+                  <th>Due Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${feeRecords && feeRecords.length ? feeRecords.map(f => `
+                  <tr>
+                    <td><strong>${f.feeId}</strong></td>
+                    <td>${f.month}</td>
+                    <td>${Utils.formatCurrency(f.totalFee)}</td>
+                    <td><strong style="color: var(--success);">${Utils.formatCurrency(f.paidAmount)}</strong></td>
+                    <td><strong style="color: ${f.remainingBalance > 0 ? 'var(--danger)' : 'var(--text-muted)'};">${Utils.formatCurrency(f.remainingBalance)}</strong></td>
+                    <td>
+                      <span class="badge ${f.paymentStatus === 'Paid' ? 'badge-paid' : f.paymentStatus === 'Partial' ? 'badge-partial' : f.paymentStatus === 'Overdue' ? 'badge-overdue' : 'badge-pending'}">
+                        ${f.paymentStatus}
+                      </span>
+                    </td>
+                    <td>${Utils.formatDate(f.dueDate)}</td>
+                  </tr>
+                `).join('') : '<tr><td colspan="7" class="empty-state">No fee vouchers available</td></tr>'}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Recent Attendance History -->
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title-group">
+              <h2><i class="fa-solid fa-clipboard-check" style="color: var(--success); margin-right: 0.4rem;"></i> Attendance History (Last 15 Days)</h2>
+              <p>Recent daily classroom attendance records</p>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Status</th>
+                  <th>Class / Section</th>
+                  <th>Remarks</th>
+                  <th>Marked By</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${recentAttendance && recentAttendance.length ? recentAttendance.map(att => `
+                  <tr>
+                    <td><strong>${Utils.formatDate(att.date)}</strong></td>
+                    <td>
+                      <span class="badge ${att.status === 'Present' ? 'badge-present' : att.status === 'Absent' ? 'badge-absent' : att.status === 'Late' ? 'badge-late' : 'badge-leave'}">
+                        ${att.status}
+                      </span>
+                    </td>
+                    <td>${att.className}-${att.section}</td>
+                    <td>${att.remarks || '<span style="color: var(--text-light);">&mdash;</span>'}</td>
+                    <td><small style="color: var(--text-muted);">${att.markedBy || 'Teacher'}</small></td>
+                  </tr>
+                `).join('') : '<tr><td colspan="5" class="empty-state">No attendance records found</td></tr>'}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  `;
+
+  view.innerHTML = html;
+}

@@ -45,7 +45,7 @@ const feeSchema = new mongoose.Schema({
   student: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Student',
-    required: [true, 'Student reference is required']
+    required: false
   },
   studentId: {
     type: String,

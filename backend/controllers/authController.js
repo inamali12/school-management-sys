@@ -57,13 +57,14 @@ exports.login = async (req, res, next) => {
 
     const token = generateToken(user._id, user.role);
 
-    // Strip password from returned object
-    const { password: pwd, ...safeUser } = user;
+    // Strip password from returned object cleanly (handles both Mongoose doc and plain object)
+    const userObj = user.toObject ? user.toObject() : { ...user };
+    delete userObj.password;
 
     res.status(200).json({
       success: true,
       token,
-      user: safeUser,
+      user: userObj,
       message: `Welcome back, ${user.name}!`
     });
   } catch (err) {
@@ -77,12 +78,23 @@ exports.login = async (req, res, next) => {
 exports.getMe = async (req, res, next) => {
   try {
     const user = req.user;
+    const userObj = user.toObject ? user.toObject() : { ...user };
+    delete userObj.password;
+
     let extraData = {};
 
     // If teacher, fetch assigned teacher details
     if (user.role === 'teacher' && user.teacherRef) {
       const teacherProfile = await Storage.teachers.findById(user.teacherRef);
       extraData.teacherProfile = teacherProfile;
+    }
+
+    // If student, fetch their student profile
+    if (user.role === 'student') {
+      const studentProfile = (user.studentRef ? await Storage.students.findById(user.studentRef) : null) ||
+                             (user.studentId ? await Storage.students.findByStudentId(user.studentId) : null) ||
+                             (user.email ? await Storage.students.findOne({ contactNumber: user.phone }) : null);
+      extraData.studentProfile = studentProfile;
     }
 
     // If parent, fetch their linked children
@@ -98,7 +110,7 @@ exports.getMe = async (req, res, next) => {
     res.status(200).json({
       success: true,
       user: {
-        ...user,
+        ...userObj,
         ...extraData
       }
     });

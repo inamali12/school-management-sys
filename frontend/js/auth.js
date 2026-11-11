@@ -69,17 +69,36 @@ const Auth = (() => {
     const navReports = document.getElementById('nav-reports');
     const navUsers = document.getElementById('nav-users');
 
+    const currentPath = window.location.pathname;
+
     if (role === 'teacher') {
       // Teachers cannot manage fees or users
       if (navFees) navFees.style.display = 'none';
       if (navUsers) navUsers.style.display = 'none';
-      // Teachers can see their classes & attendance & students
+      // Page guard
+      if (currentPath.includes('fees.html') || currentPath.includes('users.html')) {
+        window.location.href = 'dashboard.html';
+      }
+    } else if (role === 'student') {
+      // Students can view only their dashboard, attendance, and fees
+      if (navTeachers) navTeachers.style.display = 'none';
+      if (navClasses) navClasses.style.display = 'none';
+      if (navReports) navReports.style.display = 'none';
+      if (navUsers) navUsers.style.display = 'none';
+      // Page guard
+      if (currentPath.includes('teachers.html') || currentPath.includes('classes.html') || currentPath.includes('reports.html') || currentPath.includes('users.html')) {
+        window.location.href = 'dashboard.html';
+      }
     } else if (role === 'parent') {
       // Parents can view only their children, attendance, and fees
       if (navTeachers) navTeachers.style.display = 'none';
       if (navClasses) navClasses.style.display = 'none';
       if (navReports) navReports.style.display = 'none';
       if (navUsers) navUsers.style.display = 'none';
+      // Page guard
+      if (currentPath.includes('teachers.html') || currentPath.includes('classes.html') || currentPath.includes('reports.html') || currentPath.includes('users.html')) {
+        window.location.href = 'dashboard.html';
+      }
     }
   }
 

@@ -1,8 +1,9 @@
 const app = require('../backend/app');
 const { connectDB } = require('../backend/config/db');
 
-// Ensure database connection is initialized for Vercel Serverless Function
-connectDB();
-
-module.exports = app;
+// Vercel Serverless Function entry point
+module.exports = async (req, res) => {
+  await connectDB();
+  return app(req, res);
+};
 

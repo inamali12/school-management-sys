@@ -83,6 +83,10 @@ const studentSchema = new mongoose.Schema({
   emergencyContact: {
     type: String,
     trim: true
+  },
+  userRef: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   }
 }, {
   timestamps: true

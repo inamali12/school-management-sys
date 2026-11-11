@@ -4,10 +4,13 @@
  */
 
 const API = (() => {
-  // Auto-detect backend URL: If frontend is served separately (e.g. Live Server on 5500/3000 or file:// protocol),
-  // automatically route API requests to backend at http://localhost:5000
-  const isSeparateServer = (window.location.port !== '5000') || window.location.protocol === 'file:';
-  const BASE_URL = isSeparateServer ? 'http://localhost:5000' : window.location.origin;
+  // Use centralized CONFIG if available, otherwise compute safe base URL
+  const BASE_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_BASE_URL !== undefined)
+    ? CONFIG.API_BASE_URL
+    : ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
+        && (window.location.port && window.location.port !== '5000')
+          ? 'http://localhost:5000'
+          : window.location.origin);
 
   const getToken = () => localStorage.getItem('schoolconnect_token');
   const setToken = (token) => localStorage.setItem('schoolconnect_token', token);

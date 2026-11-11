@@ -9,6 +9,7 @@ const Teacher = require('../models/Teacher');
 const ClassModel = require('../models/Class');
 const Attendance = require('../models/Attendance');
 const Fee = require('../models/Fee');
+const Activity = require('../models/Activity');
 
 // Local Data directory for persistence fallback (supports standalone backend/ or root repository)
 const DATA_DIR = fs.existsSync(path.join(__dirname, '../../data'))
@@ -438,12 +439,30 @@ const Storage = {
   // CLASSES
   // ----------------------------------------------------
   classes: {
-    async find() {
+    async find(filter = {}) {
       if (getMongoStatus()) {
-        return await ClassModel.find().sort({ numericGrade: 1 });
+        return await ClassModel.find(filter).sort({ numericGrade: 1 });
       }
       const items = readLocalData('classes');
-      return items.sort((a, b) => (a.numericGrade || 0) - (b.numericGrade || 0));
+      return items.filter(c => {
+        for (const key of Object.keys(filter)) {
+          if (c[key] !== filter[key]) return false;
+        }
+        return true;
+      }).sort((a, b) => (a.numericGrade || 0) - (b.numericGrade || 0));
+    },
+
+    async findOne(filter = {}) {
+      if (getMongoStatus()) {
+        return await ClassModel.findOne(filter);
+      }
+      const items = readLocalData('classes');
+      return items.find(c => {
+        for (const key of Object.keys(filter)) {
+          if (c[key] !== filter[key]) return false;
+        }
+        return true;
+      }) || null;
     },
 
     async findById(id) {
@@ -869,6 +888,44 @@ const Storage = {
         pendingCount,
         overdueCount
       };
+    }
+  },
+
+  // ----------------------------------------------------
+  // ACTIVITIES
+  // ----------------------------------------------------
+  activities: {
+    async find(filter = {}, limit = 20) {
+      if (getMongoStatus()) {
+        return await Activity.find(filter).sort({ timestamp: -1, createdAt: -1 }).limit(limit);
+      }
+      let items = readLocalData('activities');
+      if (filter.type) {
+        items = items.filter(a => a.type === filter.type);
+      }
+      return items.sort((a, b) => new Date(b.timestamp || b.createdAt || 0) - new Date(a.timestamp || a.createdAt || 0)).slice(0, limit);
+    },
+
+    async create(activityData) {
+      const entry = {
+        ...activityData,
+        timestamp: activityData.timestamp || new Date().toISOString()
+      };
+      if (getMongoStatus()) {
+        return await Activity.create(entry);
+      }
+      const items = readLocalData('activities');
+      const now = new Date().toISOString();
+      const newActivity = {
+        _id: entry._id || generateObjectId(),
+        ...entry,
+        createdAt: now,
+        updatedAt: now
+      };
+      items.unshift(newActivity);
+      if (items.length > 200) items.pop();
+      writeLocalData('activities', items);
+      return newActivity;
     }
   }
 };

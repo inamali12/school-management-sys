@@ -22,7 +22,7 @@ exports.getUsers = async (req, res, next) => {
 // @access  Private (Admin only)
 exports.createUser = async (req, res, next) => {
   try {
-    const { name, email, username, password, role, phone, teacherRef, studentIds } = req.body;
+    const { name, email, username, password, role, phone, teacherRef, studentRef, studentId, studentIds } = req.body;
 
     if (!name || !email || !username || !password || !role) {
       return res.status(400).json({
@@ -69,6 +69,8 @@ exports.createUser = async (req, res, next) => {
       role,
       phone: phone ? phone.trim() : '',
       teacherRef: teacherRef || null,
+      studentRef: studentRef || null,
+      studentId: studentId ? studentId.trim().toUpperCase() : (parsedStudentIds[0] || ''),
       studentIds: parsedStudentIds,
       status: 'active'
     });
