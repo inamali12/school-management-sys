@@ -44,6 +44,17 @@ const Utils = (() => {
     }, duration);
   }
 
+  // HTML entity escaper to prevent XSS and malformed HTML rendering
+  function escapeHtml(str) {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   // Format currency into Pakistani Rupees (PKR)
   function formatCurrency(amount) {
     const num = Number(amount) || 0;
@@ -328,6 +339,7 @@ const Utils = (() => {
   }
 
   return {
+    escapeHtml,
     showToast,
     formatCurrency,
     formatDate,
@@ -339,4 +351,12 @@ const Utils = (() => {
     printElement
   };
 })();
+
+// Explicitly bind to window for cross-script reliability
+if (typeof window !== 'undefined') {
+  window.Utils = Utils;
+}
+if (typeof module !== 'undefined' && module.exports) {
+  module.exports = Utils;
+}
 
