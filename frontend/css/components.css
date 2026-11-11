@@ -138,6 +138,19 @@
   box-shadow: var(--shadow-sm);
   margin-bottom: 2rem;
   overflow: hidden;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.card-header,
+.card-body,
+.card-footer {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
 }
 
 .card-header {
@@ -278,10 +291,13 @@
    ---------------------------------------------------- */
 .table-responsive {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
   margin-bottom: 0.5rem;
   border-radius: var(--radius-md);
+  box-sizing: border-box;
 }
 
 .data-table {

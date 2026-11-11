@@ -715,48 +715,48 @@ function renderStudentDashboard(data) {
     <!-- Main Content Layout: Profile Sidebar & Tables (Fully Responsive) -->
     <div class="dashboard-two-col">
       
-      <!-- Left Column: Student Profile Details -->
-      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      <!-- Left Column: Student Profile Details (30-35% on Desktop, 100% on Mobile) -->
+      <div class="dashboard-profile-col">
         <div class="card">
-          <div class="card-header" style="text-align: center; display: flex; flex-direction: column; align-items: center; padding-top: 1.75rem;">
-            <img src="${studentProfile.photoUrl || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150'}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" style="width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 4px solid #e0f2fe; box-shadow: var(--shadow-md); margin-bottom: 0.75rem;" alt="${studentProfile.fullName}">
-            <h2 style="font-size: 1.25rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.2rem;">${studentProfile.fullName}</h2>
-            <span class="badge" style="background: #e0f2fe; color: #0369a1; font-weight: 700;">${studentProfile.studentId}</span>
+          <div class="student-profile-header">
+            <img src="${studentProfile.photoUrl || 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=150'}" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100'" class="student-profile-avatar" alt="${Utils.escapeHtml(studentProfile.fullName)}">
+            <h2 class="student-profile-name">${Utils.escapeHtml(studentProfile.fullName)}</h2>
+            <span class="badge student-profile-id" style="background: #e0f2fe; color: #0369a1;">${studentProfile.studentId}</span>
           </div>
 
           <div class="card-body" style="padding: 1rem 1.25rem;">
-            <div style="display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.88rem;">
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;">
-                <span style="color: var(--text-muted);"><i class="fa-solid fa-user-tag" style="margin-right: 0.4rem;"></i> Father's Name</span>
-                <strong>${studentProfile.fatherName}</strong>
+            <div class="student-details-list">
+              <div class="student-detail-item">
+                <span class="student-detail-label"><i class="fa-solid fa-user-tag" style="color: var(--secondary);"></i> Father's Name</span>
+                <span class="student-detail-val">${Utils.escapeHtml(studentProfile.fatherName)}</span>
               </div>
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;">
-                <span style="color: var(--text-muted);"><i class="fa-solid fa-school" style="margin-right: 0.4rem;"></i> Class & Section</span>
-                <strong>${studentProfile.className} (${studentProfile.section})</strong>
+              <div class="student-detail-item">
+                <span class="student-detail-label"><i class="fa-solid fa-school" style="color: var(--secondary);"></i> Class & Section</span>
+                <span class="student-detail-val">${studentProfile.className} (${studentProfile.section})</span>
               </div>
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;">
-                <span style="color: var(--text-muted);"><i class="fa-solid fa-hashtag" style="margin-right: 0.4rem;"></i> Roll Number</span>
-                <strong>${studentProfile.rollNumber || 'N/A'}</strong>
+              <div class="student-detail-item">
+                <span class="student-detail-label"><i class="fa-solid fa-hashtag" style="color: var(--secondary);"></i> Roll Number</span>
+                <span class="student-detail-val">${studentProfile.rollNumber || 'N/A'}</span>
               </div>
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;">
-                <span style="color: var(--text-muted);"><i class="fa-solid fa-venus-mars" style="margin-right: 0.4rem;"></i> Gender</span>
-                <strong>${studentProfile.gender}</strong>
+              <div class="student-detail-item">
+                <span class="student-detail-label"><i class="fa-solid fa-venus-mars" style="color: var(--secondary);"></i> Gender</span>
+                <span class="student-detail-val">${studentProfile.gender}</span>
               </div>
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;">
-                <span style="color: var(--text-muted);"><i class="fa-solid fa-cake-candles" style="margin-right: 0.4rem;"></i> Date of Birth</span>
-                <strong>${studentProfile.dob || 'N/A'}</strong>
+              <div class="student-detail-item">
+                <span class="student-detail-label"><i class="fa-solid fa-cake-candles" style="color: var(--secondary);"></i> Date of Birth</span>
+                <span class="student-detail-val">${studentProfile.dob || 'N/A'}</span>
               </div>
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;">
-                <span style="color: var(--text-muted);"><i class="fa-solid fa-id-card" style="margin-right: 0.4rem;"></i> B-Form / CNIC</span>
-                <strong>${studentProfile.bFormOrCnic || 'N/A'}</strong>
+              <div class="student-detail-item">
+                <span class="student-detail-label"><i class="fa-solid fa-id-card" style="color: var(--secondary);"></i> B-Form / CNIC</span>
+                <span class="student-detail-val" style="font-family: monospace;">${studentProfile.bFormOrCnic || 'N/A'}</span>
               </div>
-              <div style="display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 0.4rem;">
-                <span style="color: var(--text-muted);"><i class="fa-solid fa-phone" style="margin-right: 0.4rem;"></i> Contact</span>
-                <strong>${studentProfile.contactNumber || 'N/A'}</strong>
+              <div class="student-detail-item">
+                <span class="student-detail-label"><i class="fa-solid fa-phone" style="color: var(--secondary);"></i> Contact</span>
+                <span class="student-detail-val">${studentProfile.contactNumber || 'N/A'}</span>
               </div>
-              <div style="display: flex; justify-content: space-between; padding-bottom: 0.2rem;">
-                <span style="color: var(--text-muted);"><i class="fa-solid fa-calendar-days" style="margin-right: 0.4rem;"></i> Admission Date</span>
-                <strong>${Utils.formatDate(studentProfile.admissionDate)}</strong>
+              <div class="student-detail-item">
+                <span class="student-detail-label"><i class="fa-solid fa-calendar-days" style="color: var(--secondary);"></i> Admission Date</span>
+                <span class="student-detail-val">${Utils.formatDate(studentProfile.admissionDate)}</span>
               </div>
             </div>
           </div>
@@ -784,10 +784,10 @@ function renderStudentDashboard(data) {
         </div>
       </div>
 
-      <!-- Right Column: Fee Vouchers & Attendance Log -->
-      <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+      <!-- Right Column: Fee Vouchers & Attendance Log (Remaining width on Desktop, Stacked below on Mobile) -->
+      <div class="dashboard-main-col">
         
-        <!-- Monthly Fee Vouchers -->
+        <!-- Monthly Fee Vouchers Card -->
         <div class="card">
           <div class="card-header">
             <div class="card-title-group">
@@ -795,7 +795,9 @@ function renderStudentDashboard(data) {
               <p>Review monthly billing, payment status, and dues</p>
             </div>
           </div>
-          <div class="table-responsive">
+
+          <!-- Desktop View: Table -->
+          <div class="table-responsive desktop-only-table">
             <table class="data-table">
               <thead>
                 <tr>
@@ -827,9 +829,50 @@ function renderStudentDashboard(data) {
               </tbody>
             </table>
           </div>
+
+          <!-- Mobile View: Responsive Stacked Fee Cards -->
+          <div class="mobile-only-cards" style="padding: 1rem; display: flex; flex-direction: column; gap: 0.85rem;">
+            ${feeRecords && feeRecords.length ? feeRecords.map(f => {
+              const isPaid = f.paymentStatus === 'Paid';
+              const isOverdue = f.paymentStatus === 'Overdue';
+              const isPartial = f.paymentStatus === 'Partial';
+              const statusClass = isPaid ? 'badge-paid' : isPartial ? 'badge-partial' : isOverdue ? 'badge-overdue' : 'badge-pending';
+              const balanceColor = f.remainingBalance > 0 ? 'var(--danger)' : 'var(--success)';
+
+              return `
+                <div class="mobile-data-card" style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1rem; background: #ffffff; box-shadow: var(--shadow-sm);">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.6rem; flex-wrap: wrap; gap: 0.4rem;">
+                    <strong style="color: var(--primary); font-family: monospace; font-size: 0.95rem;">${f.feeId}</strong>
+                    <span class="badge ${statusClass}">${f.paymentStatus}</span>
+                  </div>
+                  <div style="font-weight: 700; font-size: 1rem; color: var(--text-main); margin-bottom: 0.65rem;">
+                    <i class="fa-solid fa-calendar-check" style="color: var(--secondary); margin-right: 0.35rem;"></i>${f.month}
+                  </div>
+                  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; background: #f8fafc; padding: 0.65rem; border-radius: var(--radius-sm); margin-bottom: 0.6rem; text-align: center;">
+                    <div>
+                      <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">Total Fee</div>
+                      <div style="font-weight: 700; font-size: 0.88rem; color: var(--text-main); margin-top: 0.15rem;">${Utils.formatCurrency(f.totalFee)}</div>
+                    </div>
+                    <div>
+                      <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">Paid</div>
+                      <div style="font-weight: 700; font-size: 0.88rem; color: var(--success); margin-top: 0.15rem;">${Utils.formatCurrency(f.paidAmount)}</div>
+                    </div>
+                    <div>
+                      <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 600;">Remaining</div>
+                      <div style="font-weight: 700; font-size: 0.88rem; color: ${balanceColor}; margin-top: 0.15rem;">${Utils.formatCurrency(f.remainingBalance)}</div>
+                    </div>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-muted); border-top: 1px dashed var(--border-color); padding-top: 0.5rem;">
+                    <span><i class="fa-regular fa-clock" style="margin-right: 0.3rem;"></i>Due Date</span>
+                    <strong style="color: var(--text-main);">${Utils.formatDate(f.dueDate)}</strong>
+                  </div>
+                </div>
+              `;
+            }).join('') : '<div class="empty-state">No fee vouchers available</div>'}
+          </div>
         </div>
 
-        <!-- Recent Attendance History -->
+        <!-- Recent Attendance History Card -->
         <div class="card">
           <div class="card-header">
             <div class="card-title-group">
@@ -837,7 +880,9 @@ function renderStudentDashboard(data) {
               <p>Recent daily classroom attendance records</p>
             </div>
           </div>
-          <div class="table-responsive">
+
+          <!-- Desktop View: Table -->
+          <div class="table-responsive desktop-only-table">
             <table class="data-table">
               <thead>
                 <tr>
@@ -864,6 +909,38 @@ function renderStudentDashboard(data) {
                 `).join('') : '<tr><td colspan="5" class="empty-state">No attendance records found</td></tr>'}
               </tbody>
             </table>
+          </div>
+
+          <!-- Mobile View: Responsive Stacked Attendance Cards -->
+          <div class="mobile-only-cards" style="padding: 1rem; display: flex; flex-direction: column; gap: 0.85rem;">
+            ${recentAttendance && recentAttendance.length ? recentAttendance.map(att => {
+              const statusClass = att.status === 'Present' ? 'badge-present'
+                : att.status === 'Absent' ? 'badge-absent'
+                : att.status === 'Late' ? 'badge-late'
+                : 'badge-leave';
+
+              return `
+                <div class="mobile-data-card" style="border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 0.9rem 1rem; background: #ffffff; box-shadow: var(--shadow-sm);">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.4rem;">
+                    <strong style="color: var(--text-main); font-size: 0.92rem;"><i class="fa-regular fa-calendar" style="color: var(--primary); margin-right: 0.35rem;"></i>${Utils.formatDate(att.date)}</strong>
+                    <span class="badge ${statusClass}">${att.status}</span>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.84rem; color: var(--text-muted); margin-bottom: 0.35rem;">
+                    <span>Class & Section:</span>
+                    <strong style="color: var(--text-main);">${att.className}-${att.section}</strong>
+                  </div>
+                  <div style="display: flex; justify-content: space-between; font-size: 0.84rem; color: var(--text-muted); margin-bottom: 0.35rem;">
+                    <span>Marked By:</span>
+                    <span>${att.markedBy || 'Teacher'}</span>
+                  </div>
+                  ${att.remarks ? `
+                    <div style="font-size: 0.82rem; background: #f8fafc; padding: 0.4rem 0.6rem; border-radius: var(--radius-sm); border-left: 3px solid var(--secondary); margin-top: 0.4rem;">
+                      <strong style="color: var(--text-muted); font-size: 0.76rem;">Remarks:</strong> ${Utils.escapeHtml(att.remarks)}
+                    </div>
+                  ` : ''}
+                </div>
+              `;
+            }).join('') : '<div class="empty-state">No attendance records found</div>'}
           </div>
         </div>
 
