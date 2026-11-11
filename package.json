@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node backend/server.js",
     "backend": "cd backend && node server.js",
-    "frontend": "start frontend/login.html",
+    "frontend": "start http://localhost:5000/login.html",
     "dev": "node backend/server.js",
     "seed": "node backend/utils/seedData.js",
     "test": "node backend/utils/runTests.js"

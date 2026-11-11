@@ -308,6 +308,17 @@
       Utils.showToast('Your session has expired. Please log in again.', 'warning');
     }
 
+    // If opened directly from disk as file://, show friendly localhost banner
+    if (window.location.protocol === 'file:') {
+      const noticeDiv = document.createElement('div');
+      noticeDiv.style.cssText = 'background: #eff6ff; border: 1px solid #93c5fd; color: #1e40af; padding: 0.75rem 1rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.82rem; display: flex; align-items: center; justify-content: space-between; gap: 0.5rem;';
+      noticeDiv.innerHTML = '<span><i class="fa-solid fa-circle-info" style="margin-right: 0.35rem;"></i> Running in file mode. For best experience, open <strong><a href="http://localhost:5000/login.html" style="color: #2563eb; text-decoration: underline;">http://localhost:5000</a></strong></span><a href="http://localhost:5000/login.html" class="btn btn-primary btn-sm" style="font-size: 0.75rem; padding: 0.25rem 0.6rem; text-decoration: none;">Switch to Localhost</a>';
+      const formHeader = document.querySelector('.form-header');
+      if (formHeader && formHeader.parentNode) {
+        formHeader.parentNode.insertBefore(noticeDiv, formHeader);
+      }
+    }
+
     // Quick fill helper
     function quickFill(user, pass) {
       document.getElementById('username').value = user;

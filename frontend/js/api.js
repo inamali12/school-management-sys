@@ -4,13 +4,19 @@
  */
 
 const API = (() => {
-  // Use centralized CONFIG if available, otherwise compute safe base URL
-  const BASE_URL = (typeof CONFIG !== 'undefined' && CONFIG.API_BASE_URL !== undefined)
-    ? CONFIG.API_BASE_URL
-    : ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:')
-        && (window.location.port && window.location.port !== '5000')
-          ? 'http://localhost:5000'
-          : window.location.origin);
+  const resolveBaseUrl = () => {
+    if (typeof CONFIG !== 'undefined' && CONFIG.API_BASE_URL !== undefined) {
+      return CONFIG.API_BASE_URL;
+    }
+    if (window.location.protocol === 'file:') {
+      return 'http://localhost:5000';
+    }
+    if ((window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') && window.location.port && window.location.port !== '5000') {
+      return 'http://localhost:5000';
+    }
+    return '';
+  };
+  const BASE_URL = resolveBaseUrl();
 
   const getToken = () => localStorage.getItem('schoolconnect_token');
   const setToken = (token) => localStorage.setItem('schoolconnect_token', token);
